@@ -1,0 +1,12 @@
+services:
+    phoenix:
+        container_name: phoenix-app
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+            - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+            - PHX_HOST=${PHX_HOST}
+            - PORT=${PHX_PORT}
+        ports:
+            - "${PHX_PORT}:${PHX_PORT}"      
