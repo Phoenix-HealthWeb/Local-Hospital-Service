@@ -20,7 +20,9 @@ defmodule LocalHospitalService.Application do
       # Start a worker by calling: LocalHospitalService.Worker.start_link(arg)
       # {LocalHospitalService.Worker, arg},
       # Start to serve requests, typically the last entry
-      LocalHospitalServiceWeb.Endpoint
+      LocalHospitalServiceWeb.Endpoint,
+      # Start the Rabbit GenServer
+      LocalHospitalService.Rabbit
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
