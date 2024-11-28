@@ -1,12 +1,18 @@
 services:
     phoenix:
-        container_name: phoenix-app
+        container_name: phoenix-app-local-hospital
         build:
             context: .
             dockerfile: Dockerfile
+        volumes:
+            - sqlite-data:/etc/local_hospital_service
         environment:
+            - DATABASE_PATH=${DATABASE_PATH}
             - SECRET_KEY_BASE=${SECRET_KEY_BASE}
             - PHX_HOST=${PHX_HOST}
             - PORT=${PHX_PORT}
         ports:
             - "${PHX_PORT}:${PHX_PORT}"      
+
+volumes:
+    sqlite-data: {}

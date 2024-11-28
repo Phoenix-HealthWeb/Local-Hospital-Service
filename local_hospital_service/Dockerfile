@@ -64,7 +64,7 @@ COPY rel rel
 RUN mix release
 
 # Build files will have CRLF line endings if rel/overlays/bin has been generated in Windows. Convert them back to LF
-RUN dos2unix /app/_build/${MIX_ENV}/rel/ndb_rest_api/bin/*
+RUN dos2unix /app/_build/${MIX_ENV}/rel/local_hospital_service/bin/*
 
 # start a new build stage so that the final image will only contain
 # the compiled release and other runtime necessities
@@ -89,6 +89,10 @@ ENV MIX_ENV="prod"
 
 # Only copy the final release from the build stage
 COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/local_hospital_service ./
+
+# Create the volume directory and set its owner as "nobody"
+# This is required so to allow Phoenix to write the sqlite db
+RUN mkdir -p /backup /etc/local_hospital_service && chown -R nobody /etc/local_hospital_service
 
 USER nobody
 
