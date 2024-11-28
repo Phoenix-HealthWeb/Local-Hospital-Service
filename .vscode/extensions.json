@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "phoenixframework.phoenix",
+        "jakebecker.elixir-ls",
+        "bradlc.vscode-tailwindcss"
+    ]
+}
