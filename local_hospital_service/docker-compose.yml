@@ -1,7 +1,7 @@
 services:
     rabbitmq:
         container_name: rabbitmq-local-hospital
-        # A hotname is needed for two purpouses:
+        # A hostname is needed for two purpouses:
         #   to connect to the RabbitMQ server from the Phoenix app
         #   to persist data in the volumes, since files are writted in subfolders rabbit@<hostname>
         hostname: rabbitmq-host
