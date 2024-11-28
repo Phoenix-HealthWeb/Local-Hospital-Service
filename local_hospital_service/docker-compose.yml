@@ -1,4 +1,22 @@
 services:
+    rabbitmq:
+        container_name: rabbitmq-local-hospital
+        # A hotname is needed for two purpouses:
+        #   to connect to the RabbitMQ server from the Phoenix app
+        #   to persist data in the volumes, since files are writted in subfolders rabbit@<hostname>
+        hostname: rabbitmq-host
+        image: rabbitmq:management
+        restart: unless-stopped
+        volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
+            - rabbitmq-log:/var/log/rabbitmq
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+
     phoenix:
         container_name: phoenix-app-local-hospital
         build:
@@ -12,7 +30,11 @@ services:
             - PHX_HOST=${PHX_HOST}
             - PORT=${PHX_PORT}
         ports:
-            - "${PHX_PORT}:${PHX_PORT}"      
+            - "${PHX_PORT}:${PHX_PORT}"
+        depends_on:
+            - rabbitmq     
 
 volumes:
     sqlite-data: {}
+    rabbitmq-data: {}
+    rabbitmq-log: {}
