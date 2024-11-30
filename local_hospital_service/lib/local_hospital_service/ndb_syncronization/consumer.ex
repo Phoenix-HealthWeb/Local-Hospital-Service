@@ -1,4 +1,4 @@
-defmodule LocalHospitalService.NDBSyncronization.Consumer do
+defmodule LocalHospitalService.NdbSyncronization.Consumer do
   @moduledoc """
   This module is responsible for synchronizing the local database with the NDB API.
   """
