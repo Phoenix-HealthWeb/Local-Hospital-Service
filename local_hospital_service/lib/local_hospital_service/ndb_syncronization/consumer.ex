@@ -7,8 +7,10 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
 
   require Logger
 
-  # TODO: Pick from config
-  @queue_name "testing_queue_elixir"
+  @queue_name Application.compile_env!(
+                :local_hospital_service,
+                LocalHospitalService.NdbSyncronization
+              )[:queue_name]
 
   @doc """
   Called by the supervisor to start process.
@@ -19,8 +21,14 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
 
   @impl true
   def init(_init_args) do
-    # TODO: Connection url
-    {:ok, conn} = AMQP.Connection.open()
+    rabbit_host =
+      Application.get_env(:local_hospital_service, LocalHospitalService.NdbSyncronization)[
+        :rabbit_host
+      ]
+
+    {:ok, conn} =
+      AMQP.Connection.open(host: rabbit_host)
+
     {:ok, channel} = AMQP.Channel.open(conn)
     {:ok, queue} = AMQP.Queue.declare(channel, @queue_name, durable: true)
 
