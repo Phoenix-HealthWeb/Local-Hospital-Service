@@ -21,8 +21,8 @@ defmodule LocalHospitalService.Application do
       # {LocalHospitalService.Worker, arg},
       # Start to serve requests, typically the last entry
       LocalHospitalServiceWeb.Endpoint,
-      # Start the Rabbit GenServer
-      LocalHospitalService.Rabbit
+      # Start the NDB Syncronization process
+      LocalHospitalService.NDBSyncronization.Consumer
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

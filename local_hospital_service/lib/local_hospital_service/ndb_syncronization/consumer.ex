@@ -1,4 +1,8 @@
-defmodule LocalHospitalService.Rabbit do
+defmodule LocalHospitalService.NDBSyncronization.Consumer do
+  @moduledoc """
+  This module is responsible for synchronizing the local database with the NDB API.
+  """
+
   use GenServer
 
   require Logger
@@ -6,6 +10,9 @@ defmodule LocalHospitalService.Rabbit do
   # TODO: Pick from config
   @queue_name "testing_queue_elixir"
 
+  @doc """
+  Called by the supervisor to start process.
+  """
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
@@ -20,6 +27,7 @@ defmodule LocalHospitalService.Rabbit do
     :ok = AMQP.Basic.qos(channel, prefetch_count: 10)
 
     AMQP.Basic.consume(channel, @queue_name)
+    Logger.info("#{__MODULE__} starting consuming from queue #{@queue_name}")
 
     {:ok, %{conn: conn, channel: channel, queue: queue}}
   end
@@ -47,7 +55,6 @@ defmodule LocalHospitalService.Rabbit do
         {:basic_deliver, payload, %{delivery_tag: tag, redelivered: redelivered}} = _meta,
         state
       ) do
-    Logger.info("Received message: #{inspect(payload)}")
     # You might want to run payload consumption in separate Tasks in production
     consume(state.channel, tag, redelivered, payload)
 
@@ -56,15 +63,17 @@ defmodule LocalHospitalService.Rabbit do
 
   @impl true
   def terminate(reason, state) do
-    Logger.info("Terminating Rabbit GenServer with reason: #{inspect(reason)}")
+    Logger.info("Terminating #{__MODULE__} with reason: #{inspect(reason)}")
     AMQP.Connection.close(state.conn)
     :ok
   end
 
-  defp consume(channel, tag, _redelivered, _payload) do
+  defp consume(channel, tag, _redelivered, payload) do
     # TODO: Do something with the payload
+    Logger.info("Received message: #{inspect(payload)}")
+
     :ok = AMQP.Basic.ack(channel, tag)
-    #:ok = AMQP.Basic.reject(channel, tag, requeue: true)
+    # :ok = AMQP.Basic.reject(channel, tag, requeue: true)
   rescue
     # You might also want to catch :exit signal in production code.
     # Make sure you call ack, nack or reject otherwise consumer will stop
