@@ -19,6 +19,7 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
 
   @impl true
   def init(_init_args) do
+    # TODO: Connection url
     {:ok, conn} = AMQP.Connection.open()
     {:ok, channel} = AMQP.Channel.open(conn)
     {:ok, queue} = AMQP.Queue.declare(channel, @queue_name, durable: true)
@@ -64,6 +65,7 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
   @impl true
   def terminate(reason, state) do
     Logger.info("Terminating #{__MODULE__} with reason: #{inspect(reason)}")
+    AMQP.Channel.close(state.channel)
     AMQP.Connection.close(state.conn)
     :ok
   end
