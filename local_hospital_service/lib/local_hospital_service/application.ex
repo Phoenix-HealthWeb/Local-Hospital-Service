@@ -21,9 +21,8 @@ defmodule LocalHospitalService.Application do
       # {LocalHospitalService.Worker, arg},
       # Start to serve requests, typically the last entry
       LocalHospitalServiceWeb.Endpoint,
-      # Start the NDB Syncronization processes
-      LocalHospitalService.NdbSyncronization.Consumer,
-      LocalHospitalService.NdbSyncronization.Producer
+      # Start the NDB Syncronization supervisor
+      LocalHospitalService.NdbSyncronization.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
