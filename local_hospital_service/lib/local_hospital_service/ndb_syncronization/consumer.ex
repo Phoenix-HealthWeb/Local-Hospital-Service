@@ -59,13 +59,60 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
     {:noreply, state}
   end
 
+  @doc """
+  Handles incoming messages from RabbitMQ.
+  """
   @impl true
   def handle_info(
-        {:basic_deliver, payload, %{delivery_tag: tag, redelivered: redelivered}} = _meta,
+        {:basic_deliver, payload, %{delivery_tag: tag, redelivered: _redelivered}} = _meta,
         state
       ) do
-    # You might want to run payload consumption in separate Tasks in production
-    consume(state.channel, tag, redelivered, payload)
+    # TODO: You might want to run payload consumption in separate Tasks in production
+    case Jason.decode(payload, keys: :atoms) do
+      {:ok, %{type: "condition", data: unstructed_condition}} ->
+        consume(
+          state.channel,
+          tag,
+          LocalHospitalService.Dto.Condition,
+          unstructed_condition,
+          fn condition ->
+            Logger.info("Consuming Condition: #{inspect(condition)}")
+          end
+        )
+
+      {:ok, %{type: "medication_request", data: unstructed_medication_request}} ->
+        consume(
+          state.channel,
+          tag,
+          LocalHospitalService.Dto.MedicationRequest,
+          unstructed_medication_request,
+          fn medication_request ->
+            Logger.info("Consuming Medication Request: #{inspect(medication_request)}")
+          end
+        )
+
+      {:ok, %{type: "observation", data: unstructed_observation}} ->
+        consume(
+          state.channel,
+          tag,
+          LocalHospitalService.Dto.Observation,
+          unstructed_observation,
+          fn observation ->
+            Logger.info("Consuming Observation: #{inspect(observation)}")
+          end
+        )
+
+      {:ok, decoded} ->
+        Logger.warning("Received unknown payload from RabbitMQ: #{inspect(decoded)}")
+        :ok = AMQP.Basic.reject(state.channel, tag, requeue: false)
+
+      {:error, error = %Jason.DecodeError{}} ->
+        Logger.warning(
+          "Failed to decode payload from RabbitMQ: #{inspect(payload)}. Error: #{inspect(error)}"
+        )
+
+        :ok = AMQP.Basic.reject(state.channel, tag, requeue: false)
+    end
 
     {:noreply, state}
   end
@@ -78,17 +125,37 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
     :ok
   end
 
-  defp consume(channel, tag, _redelivered, payload) do
-    # TODO: Do something with the payload
-    Logger.info("Received message: #{inspect(payload)}")
+  # Tries to struct and then consume a certain payload.
+  # The payload is passed as an unstructured map, along with the desired struct to be created.
+  # If the structuring process succeeds, the callback function is called with the structured payload.
+  # Otherwise, the payload is rejected and not requeued.
+  defp consume(channel, tag, target_struct, unstructed, cb) do
+    # Try to structure the payload, and handle if it fails
+    structed_res =
+      try do
+        {:ok, struct!(target_struct, unstructed)}
+      rescue
+        exception -> {:error, exception}
+      end
 
-    :ok = AMQP.Basic.ack(channel, tag)
-    # :ok = AMQP.Basic.reject(channel, tag, requeue: true)
-  rescue
-    # You might also want to catch :exit signal in production code.
-    # Make sure you call ack, nack or reject otherwise consumer will stop
-    # receiving messages.
-    _exception ->
-      :ok = AMQP.Basic.reject(channel, tag, requeue: true)
+    case structed_res do
+      {:ok, structed} ->
+        try do
+          cb.(structed)
+
+          :ok = AMQP.Basic.ack(channel, tag)
+        rescue
+          # Here the payload is well-formed but the consumption process failed. It should be requeued
+          _ -> :ok = AMQP.Basic.reject(channel, tag, requeue: true)
+        end
+
+      # In case of structuring failure, the payload is malformed and should not be requeued
+      {:error, exception} ->
+        Logger.warning(
+          "Failed to struct payload: #{inspect(unstructed)} to #{target_struct}. Error: #{inspect(exception)}"
+        )
+
+        :ok = AMQP.Basic.reject(channel, tag, requeue: false)
+    end
   end
 end
