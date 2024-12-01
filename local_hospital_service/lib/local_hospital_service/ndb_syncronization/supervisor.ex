@@ -44,8 +44,9 @@ defmodule LocalHospitalService.NdbSyncronization.Supervisor do
 
     children = [
       {LocalHospitalService.NdbSyncronization.Consumer,
+       connection: connection, queue_name: queue.queue},
+      {LocalHospitalService.NdbSyncronization.Producer,
        connection: connection, queue_name: queue.queue}
-      # {LocalHospitalService.NdbSyncronization.Producer, connection: connection, queue_name: queue.queue}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)
