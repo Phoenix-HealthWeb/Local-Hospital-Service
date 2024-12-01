@@ -1,4 +1,8 @@
 defmodule LocalHospitalService.NdbSyncronization.Supervisor do
+  @moduledoc """
+  This supervisor is responsible for setting up the queues needed for the data syncronization process,
+  and then starting and managing both producer and consumer processes.
+  """
   use Supervisor
 
   @queue_name Application.compile_env!(
@@ -40,6 +44,7 @@ defmodule LocalHospitalService.NdbSyncronization.Supervisor do
         routing_key: ""
       )
 
+    # This channel has been opened just to set up the queues, it's no longer needed
     :ok = AMQP.Channel.close(channel)
 
     children = [
@@ -49,6 +54,7 @@ defmodule LocalHospitalService.NdbSyncronization.Supervisor do
        connection: connection, queue_name: queue.queue}
     ]
 
+    # :one_for_one means that each child is restarted independently from the others
     Supervisor.init(children, strategy: :one_for_one)
   end
 end
