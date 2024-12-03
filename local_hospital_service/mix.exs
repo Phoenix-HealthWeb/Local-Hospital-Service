@@ -59,7 +59,8 @@ defmodule LocalHospitalService.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      {:pbkdf2_elixir, "~> 2.0"}
     ]
   end
 
