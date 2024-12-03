@@ -17,7 +17,8 @@ defmodule LocalHospitalService.Accounts.UserToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
-    belongs_to :user, LocalHospitalService.Accounts.User
+    field :user_id, :string
+    embeds_one :user, User
 
     timestamps(type: :utc_datetime, updated_at: false)
   end
@@ -43,7 +44,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
   """
   def build_session_token(user) do
     token = :crypto.strong_rand_bytes(@rand_size)
-    {token, %UserToken{token: token, context: "session", user_id: user.id}}
+    {token, %UserToken{token: token, context: "session", user_id: user.id, user: user}}
   end
 
   @doc """
@@ -57,9 +58,8 @@ defmodule LocalHospitalService.Accounts.UserToken do
   def verify_session_token_query(token) do
     query =
       from token in by_token_and_context_query(token, "session"),
-        join: user in assoc(token, :user),
         where: token.inserted_at > ago(@session_validity_in_days, "day"),
-        select: user
+        select: token.user
 
     {:ok, query}
   end

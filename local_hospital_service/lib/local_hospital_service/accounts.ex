@@ -23,6 +23,7 @@ defmodule LocalHospitalService.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
+    # TODO:
     Repo.get_by(User, email: email)
   end
 
@@ -40,6 +41,7 @@ defmodule LocalHospitalService.Accounts do
   """
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
+    # TODO:
     user = Repo.get_by(User, email: email)
     if User.valid_password?(user, password), do: user
   end
@@ -58,6 +60,7 @@ defmodule LocalHospitalService.Accounts do
       ** (Ecto.NoResultsError)
 
   """
+  # TODO:
   def get_user!(id), do: Repo.get!(User, id)
 
   ## User registration
@@ -77,6 +80,7 @@ defmodule LocalHospitalService.Accounts do
   def register_user(attrs) do
     %User{}
     |> User.registration_changeset(attrs)
+    # TODO:
     |> Repo.insert()
   end
 
@@ -139,6 +143,7 @@ defmodule LocalHospitalService.Accounts do
 
     with {:ok, query} <- UserToken.verify_change_email_token_query(token, context),
          %UserToken{sent_to: email} <- Repo.one(query),
+         # TODO: ??
          {:ok, _} <- Repo.transaction(user_email_multi(user, email, context)) do
       :ok
     else
@@ -152,6 +157,7 @@ defmodule LocalHospitalService.Accounts do
       |> User.email_changeset(%{email: email})
       |> User.confirm_changeset()
 
+    # TODO:
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, changeset)
     |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, [context]))
@@ -205,6 +211,7 @@ defmodule LocalHospitalService.Accounts do
       |> User.password_changeset(attrs)
       |> User.validate_current_password(password)
 
+    # TODO:
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, changeset)
     |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, :all))
@@ -276,6 +283,7 @@ defmodule LocalHospitalService.Accounts do
   def confirm_user(token) do
     with {:ok, query} <- UserToken.verify_email_token_query(token, "confirm"),
          %User{} = user <- Repo.one(query),
+         # TODO: should not be a transaction, but should call this function
          {:ok, %{user: user}} <- Repo.transaction(confirm_user_multi(user)) do
       {:ok, user}
     else
@@ -284,6 +292,7 @@ defmodule LocalHospitalService.Accounts do
   end
 
   defp confirm_user_multi(user) do
+    # TODO:
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, User.confirm_changeset(user))
     |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, ["confirm"]))
@@ -341,6 +350,7 @@ defmodule LocalHospitalService.Accounts do
 
   """
   def reset_user_password(user, attrs) do
+    # TODO:
     Ecto.Multi.new()
     |> Ecto.Multi.update(:user, User.password_changeset(user, attrs))
     |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, :all))

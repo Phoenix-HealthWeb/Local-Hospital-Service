@@ -2,7 +2,7 @@ defmodule LocalHospitalService.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "users" do
+  embedded_schema do
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -77,7 +77,8 @@ defmodule LocalHospitalService.Accounts.User do
   end
 
   defp maybe_validate_unique_email(changeset, opts) do
-    if Keyword.get(opts, :validate_email, true) do
+    # TODO: Email validation should happen on the API, for now I disable it
+    if Keyword.get(opts, :validate_email, true) && false do
       changeset
       |> unsafe_validate_unique(:email, LocalHospitalService.Repo)
       |> unique_constraint(:email)
