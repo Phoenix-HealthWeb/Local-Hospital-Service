@@ -325,7 +325,8 @@ defmodule LocalHospitalService.AccountsTest do
         Repo.insert!(%UserToken{
           token: user_token.token,
           user_id: user_fixture().id,
-          context: "session"
+          context: "session",
+          user: user
         })
       end
     end

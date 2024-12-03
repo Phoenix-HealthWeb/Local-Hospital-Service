@@ -3,11 +3,11 @@ defmodule LocalHospitalService.Repo.Migrations.CreateUsersTokensTables do
 
   def change do
     create table(:users_tokens) do
-      add :user_id, :string, null: false
+      add :user_id, :integer, null: false
       add :token, :binary, null: false, size: 32
       add :context, :string, null: false
       add :sent_to, :string
-      add :user, :map
+      add :user, :map, null: false
 
       timestamps(type: :utc_datetime, updated_at: false)
     end

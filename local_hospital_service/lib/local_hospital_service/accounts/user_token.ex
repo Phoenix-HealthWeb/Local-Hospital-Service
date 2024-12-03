@@ -17,7 +17,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
-    field :user_id, :string
+    field :user_id, :integer
     embeds_one :user, User
 
     timestamps(type: :utc_datetime, updated_at: false)
@@ -90,7 +90,8 @@ defmodule LocalHospitalService.Accounts.UserToken do
        token: hashed_token,
        context: context,
        sent_to: sent_to,
-       user_id: user.id
+       user_id: user.id,
+       user: user
      }}
   end
 
