@@ -29,6 +29,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
+            args:
+                DATABASE_PATH: ${DATABASE_PATH}
+                SECRET_KEY_BASE: ${SECRET_KEY_BASE}
         volumes:
             - sqlite-data:/etc/local_hospital_service
         environment:
