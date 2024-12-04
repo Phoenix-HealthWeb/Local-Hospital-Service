@@ -2,6 +2,9 @@ defmodule LocalHospitalService.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  # # TODO: Should be :id maybe just for mock. Then, delete this row
+  @primary_key {:id, :id, autogenerate: false}
+
   embedded_schema do
     field :email, :string
     field :password, :string, virtual: true, redact: true
@@ -135,7 +138,10 @@ defmodule LocalHospitalService.Accounts.User do
   If there is no user or the user doesn't have a password, we call
   `Pbkdf2.no_user_verify/0` to avoid timing attacks.
   """
-  def valid_password?(%LocalHospitalService.Accounts.User{hashed_password: hashed_password}, password)
+  def valid_password?(
+        %LocalHospitalService.Accounts.User{hashed_password: hashed_password},
+        password
+      )
       when is_binary(hashed_password) and byte_size(password) > 0 do
     Pbkdf2.verify_pass(password, hashed_password)
   end

@@ -17,7 +17,8 @@ defmodule LocalHospitalService.Accounts.UserToken do
     field :token, :binary
     field :context, :string
     field :sent_to, :string
-    field :user_id, :integer
+    # TODO: Should be :id maybe just for mock
+    field :user_id, :id
     embeds_one :user, LocalHospitalService.Accounts.User
 
     timestamps(type: :utc_datetime, updated_at: false)
@@ -116,6 +117,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
 
         query =
           from token in by_token_and_context_query(hashed_token, context),
+          # TODO: This join should be removed
             join: user in assoc(token, :user),
             where: token.inserted_at > ago(^days, "day") and token.sent_to == user.email,
             select: user

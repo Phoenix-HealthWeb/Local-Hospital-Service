@@ -6,7 +6,11 @@ defmodule LocalHospitalService.Api.User do
   end
 
   def get_by_email(email) do
-    Agent.get(__MODULE__, fn state -> Map.get(state, email) end)
+    Agent.get(__MODULE__, fn state ->
+      state
+      |> Map.values()
+      |> Enum.find(fn user -> user.email == email end)
+    end)
   end
 
   def get_by_id!(id) do
@@ -28,7 +32,7 @@ defmodule LocalHospitalService.Api.User do
   end
 
   def update(%Ecto.Changeset{} = changeset) do
-    updated_user = Ecto.Changeset.apply_changes(changeset);
+    updated_user = Ecto.Changeset.apply_changes(changeset)
 
     Agent.update(__MODULE__, fn state -> Map.put(state, updated_user.id, updated_user) end)
 
