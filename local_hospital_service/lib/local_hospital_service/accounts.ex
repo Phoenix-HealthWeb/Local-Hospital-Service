@@ -24,7 +24,7 @@ defmodule LocalHospitalService.Accounts do
   """
   def get_user_by_email(email) when is_binary(email) do
     # TODO:
-    Repo.get_by(User, email: email)
+    LocalHospitalService.Api.User.get_by_email(email)
   end
 
   @doc """
@@ -42,7 +42,7 @@ defmodule LocalHospitalService.Accounts do
   def get_user_by_email_and_password(email, password)
       when is_binary(email) and is_binary(password) do
     # TODO:
-    user = Repo.get_by(User, email: email)
+    user = LocalHospitalService.Api.User.get_by_email(email)
     if User.valid_password?(user, password), do: user
   end
 
@@ -61,7 +61,7 @@ defmodule LocalHospitalService.Accounts do
 
   """
   # TODO:
-  def get_user!(id), do: Repo.get!(User, id)
+  def get_user!(id), do: LocalHospitalService.Api.User.get_by_id!(id)
 
   ## User registration
 
@@ -81,7 +81,7 @@ defmodule LocalHospitalService.Accounts do
     %User{}
     |> User.registration_changeset(attrs)
     # TODO:
-    |> Repo.insert()
+    |> LocalHospitalService.Api.User.create()
   end
 
   @doc """
@@ -144,23 +144,24 @@ defmodule LocalHospitalService.Accounts do
     with {:ok, query} <- UserToken.verify_change_email_token_query(token, context),
          %UserToken{sent_to: email} <- Repo.one(query),
          # TODO: ??
-         {:ok, _} <- Repo.transaction(user_email_multi(user, email, context)) do
+         # {:ok, _} <- Repo.transaction(user_email_multi(user, email, context)) do
+         :ok <- user_email_multi(user, email, context) do
       :ok
     else
       _ -> :error
     end
   end
 
+  # TODO: This has been rewritten, see file history
   defp user_email_multi(user, email, context) do
     changeset =
       user
       |> User.email_changeset(%{email: email})
       |> User.confirm_changeset()
 
-    # TODO:
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, changeset)
-    |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, [context]))
+    LocalHospitalService.Api.User.update(changeset)
+    Repo.delete_all(UserToken.by_user_and_contexts_query(user, [context]))
+    :ok
   end
 
   @doc ~S"""
@@ -205,6 +206,7 @@ defmodule LocalHospitalService.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
+  # TODO: This has been rewritten, see file history
   def update_user_password(user, password, attrs) do
     changeset =
       user
@@ -212,14 +214,8 @@ defmodule LocalHospitalService.Accounts do
       |> User.validate_current_password(password)
 
     # TODO:
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, changeset)
-    |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, :all))
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{user: user}} -> {:ok, user}
-      {:error, :user, changeset, _} -> {:error, changeset}
-    end
+    LocalHospitalService.Api.User.update(changeset)
+    Repo.delete_all(UserToken.by_user_and_contexts_query(user, :all))
   end
 
   ## Session
@@ -291,11 +287,11 @@ defmodule LocalHospitalService.Accounts do
     end
   end
 
+  # TODO: This has been rewritten, see file history
   defp confirm_user_multi(user) do
     # TODO:
-    Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.confirm_changeset(user))
-    |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, ["confirm"]))
+    LocalHospitalService.Api.User.update(User.confirm_changeset(user))
+    Repo.delete_all(UserToken.by_user_and_contexts_query(user, ["confirm"]))
   end
 
   ## Reset password
@@ -351,8 +347,8 @@ defmodule LocalHospitalService.Accounts do
   """
   def reset_user_password(user, attrs) do
     # TODO:
+    LocalHospitalService.Api.User.update(User.password_changeset(user, attrs))
     Ecto.Multi.new()
-    |> Ecto.Multi.update(:user, User.password_changeset(user, attrs))
     |> Ecto.Multi.delete_all(:tokens, UserToken.by_user_and_contexts_query(user, :all))
     |> Repo.transaction()
     |> case do

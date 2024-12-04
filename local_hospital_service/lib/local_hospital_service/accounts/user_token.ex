@@ -18,7 +18,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
     field :context, :string
     field :sent_to, :string
     field :user_id, :integer
-    embeds_one :user, User
+    embeds_one :user, LocalHospitalService.Accounts.User
 
     timestamps(type: :utc_datetime, updated_at: false)
   end
