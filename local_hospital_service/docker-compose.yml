@@ -16,12 +16,22 @@ services:
         ports:
             - "5672:5672"
             - "15672:15672"
+        # Rabbit takes some time to start, so we need to wait for it
+        healthcheck:
+            test: rabbitmq-diagnostics -q ping
+            start_period: 2s
+            interval: 10s
+            timeout: 5s
+            retries: 5
 
     phoenix:
         container_name: phoenix-app-local-hospital
         build:
             context: .
             dockerfile: Dockerfile
+            args:
+                DATABASE_PATH: ${DATABASE_PATH}
+                SECRET_KEY_BASE: ${SECRET_KEY_BASE}
         volumes:
             - sqlite-data:/etc/local_hospital_service
         environment:
@@ -32,7 +42,8 @@ services:
         ports:
             - "${PHX_PORT}:${PHX_PORT}"
         depends_on:
-            - rabbitmq     
+            rabbitmq:
+                condition: service_healthy
 
 volumes:
     sqlite-data: {}
