@@ -11,9 +11,10 @@ defmodule LocalHospitalService.Application do
       LocalHospitalServiceWeb.Telemetry,
       LocalHospitalService.Repo,
       {Ecto.Migrator,
-        repos: Application.fetch_env!(:local_hospital_service, :ecto_repos),
-        skip: skip_migrations?()},
-      {DNSCluster, query: Application.get_env(:local_hospital_service, :dns_cluster_query) || :ignore},
+       repos: Application.fetch_env!(:local_hospital_service, :ecto_repos),
+       skip: skip_migrations?()},
+      {DNSCluster,
+       query: Application.get_env(:local_hospital_service, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: LocalHospitalService.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: LocalHospitalService.Finch},
@@ -41,6 +42,8 @@ defmodule LocalHospitalService.Application do
 
   defp skip_migrations?() do
     # By default, sqlite migrations are run when using a release
-    System.get_env("RELEASE_NAME") != nil
+    # Additionally, migrations are made if we set the FORCE_MIGRATIONS
+    System.get_env("RELEASE_NAME") != nil &&
+      System.get_env("FORCE_MIGRATIONS") != "true"
   end
 end

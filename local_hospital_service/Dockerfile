@@ -105,7 +105,7 @@ RUN mkdir -p /backup /etc/local_hospital_service && chown -R nobody /etc/local_h
 USER nobody
 
 # Run any Ecto migrations
-RUN ["/app/bin/migrate"]
+# RUN ["/app/bin/migrate"]
 
 # If using an environment that doesn't automatically reap zombie processes, it is
 # advised to add an init process such as tini via `apt-get install`
