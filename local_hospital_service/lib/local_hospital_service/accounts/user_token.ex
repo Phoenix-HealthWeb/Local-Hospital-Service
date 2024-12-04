@@ -102,7 +102,8 @@ defmodule LocalHospitalService.Accounts.UserToken do
   The query returns the user found by the token, if any.
 
   The given token is valid if it matches its hashed counterpart in the
-  database and the user email has not changed. This function also checks
+  database and the user email has not changed (NOTE: THIS DOES NOT HAPPEN ANYMORE SINCE USER IS NOT ON LOCAL DB).
+  This function also checks
   if the token is being used within a certain period, depending on the
   context. The default contexts supported by this function are either
   "confirm", for account confirmation emails, and "reset_password",
@@ -117,10 +118,8 @@ defmodule LocalHospitalService.Accounts.UserToken do
 
         query =
           from token in by_token_and_context_query(hashed_token, context),
-          # TODO: This join should be removed
-            join: user in assoc(token, :user),
-            where: token.inserted_at > ago(^days, "day") and token.sent_to == user.email,
-            select: user
+            where: token.inserted_at > ago(^days, "day"),
+            select: token.user
 
         {:ok, query}
 

@@ -1,5 +1,6 @@
 defmodule LocalHospitalService.Api.User do
   use Agent
+  # TODO: Handle all possible errors
 
   def start_link(_init_args) do
     Agent.start_link(fn -> %{} end, name: __MODULE__)
@@ -28,6 +29,7 @@ defmodule LocalHospitalService.Api.User do
 
     Agent.update(__MODULE__, fn state -> Map.put(state, user_to_create.id, user_to_create) end)
 
+    # TODO: Otherwise, {:error, %Ecto.Changeset{} = changeset}
     {:ok, user_to_create}
   end
 
@@ -36,6 +38,7 @@ defmodule LocalHospitalService.Api.User do
 
     Agent.update(__MODULE__, fn state -> Map.put(state, updated_user.id, updated_user) end)
 
+    # TODO: Otherwise, {:error, :user, changeset, _}
     {:ok, updated_user}
   end
 end
