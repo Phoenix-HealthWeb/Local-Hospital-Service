@@ -11,8 +11,10 @@ config :local_hospital_service, LocalHospitalServiceWeb.Endpoint,
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: LocalHospitalService.Finch
 
-# Disable Swoosh Local Memory Storage
-config :swoosh, local: false
+# Keep enabled Swoosh Local Memory Storage
+# Note: This is a redundant option, but I keep it explicitly here since toggling it off would cause a
+# "Swoosh.Adapters.Local.Storage.Memory the process is not alive" error when sending emails
+config :swoosh, local: true
 
 # Do not print debug messages in production
 config :logger, level: :info
