@@ -18,10 +18,6 @@ ARG DEBIAN_VERSION=bullseye-20241111-slim
 ARG BUILDER_IMAGE="hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-debian-${DEBIAN_VERSION}"
 ARG RUNNER_IMAGE="debian:${DEBIAN_VERSION}"
 
-# Used in the second stage, but needs to be declared here
-ARG DATABASE_PATH
-ARG SECRET_KEY_BASE
-
 FROM ${BUILDER_IMAGE} AS builder
 
 # install build dependencies
@@ -74,10 +70,6 @@ RUN dos2unix /app/_build/${MIX_ENV}/rel/local_hospital_service/bin/*
 # the compiled release and other runtime necessities
 FROM ${RUNNER_IMAGE}
 
-# Redeclare the ARGs to make them available in the final stage
-ARG DATABASE_PATH
-ARG SECRET_KEY_BASE
-
 RUN apt-get update -y && \
   apt-get install -y libstdc++6 openssl libncurses5 locales ca-certificates \
   && apt-get clean && rm -f /var/lib/apt/lists/*_*
@@ -103,9 +95,6 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/local_hospita
 RUN mkdir -p /backup /etc/local_hospital_service && chown -R nobody /etc/local_hospital_service
 
 USER nobody
-
-# Run any Ecto migrations
-# RUN ["/app/bin/migrate"]
 
 # If using an environment that doesn't automatically reap zombie processes, it is
 # advised to add an init process such as tini via `apt-get install`

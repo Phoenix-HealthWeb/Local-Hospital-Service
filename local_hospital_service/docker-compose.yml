@@ -29,9 +29,6 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-            args:
-                DATABASE_PATH: ${DATABASE_PATH}
-                SECRET_KEY_BASE: ${SECRET_KEY_BASE}
         volumes:
             - sqlite-data:/etc/local_hospital_service
         environment:
@@ -39,7 +36,7 @@ services:
             - SECRET_KEY_BASE=${SECRET_KEY_BASE}
             - PHX_HOST=${PHX_HOST}
             - PORT=${PHX_PORT}
-            - FORCE_MIGRATIONS="true"
+            - FORCE_MIGRATIONS=true
         ports:
             - "${PHX_PORT}:${PHX_PORT}"
         depends_on:
