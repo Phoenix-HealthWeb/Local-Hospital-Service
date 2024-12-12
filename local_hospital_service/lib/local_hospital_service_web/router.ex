@@ -54,11 +54,11 @@ defmodule LocalHospitalServiceWeb.Router do
       on_mount: [{LocalHospitalServiceWeb.UserAuth, :redirect_if_user_is_authenticated}] do
       live "/users/register", UserRegistrationLive, :new
       live "/users/log_in", UserLoginLive, :new
+      live "/users/log_in/:token", UserLoginMagicLinkLive, :new
       live "/users/reset_password", UserForgotPasswordLive, :new
       live "/users/reset_password/:token", UserResetPasswordLive, :edit
     end
 
-    # TODO: Kept only for registration
     post "/users/log_in", UserSessionController, :create
   end
 

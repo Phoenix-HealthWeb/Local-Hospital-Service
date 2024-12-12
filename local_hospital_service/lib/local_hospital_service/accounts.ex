@@ -374,8 +374,20 @@ defmodule LocalHospitalService.Accounts do
 
       UserNotifier.deliver_magic_link(
         user,
-        "#{LocalHospitalServiceWeb.Endpoint.url()}/users/log_in?token=#{email_token}"
+        "#{LocalHospitalServiceWeb.Endpoint.url()}/users/log_in/#{email_token}"
       )
+    end
+  end
+
+  @doc """
+  Verifies the magic link token and returns the user if valid.
+  """
+  def verify_magic_link(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query(token, "magic_link"),
+         %User{} = user <- Repo.one(query) do
+      {:ok, user}
+    else
+      _ -> :error
     end
   end
 end

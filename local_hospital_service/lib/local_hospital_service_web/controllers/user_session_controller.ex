@@ -8,6 +8,12 @@ defmodule LocalHospitalServiceWeb.UserSessionController do
     create(conn, params, "Account created successfully!")
   end
 
+  def create(conn, %{"_action" => "magic_link"} = params) do
+    IO.puts("Magic link")
+    # TODO: Custom logic
+    #create(conn, params, "Account created successfully!")
+  end
+
   def create(conn, %{"_action" => "password_updated"} = params) do
     conn
     |> put_session(:user_return_to, ~p"/users/settings")
