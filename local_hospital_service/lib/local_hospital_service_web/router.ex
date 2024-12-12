@@ -58,6 +58,7 @@ defmodule LocalHospitalServiceWeb.Router do
       live "/users/reset_password/:token", UserResetPasswordLive, :edit
     end
 
+    # TODO: Kept only for registration
     post "/users/log_in", UserSessionController, :create
   end
 

@@ -13,6 +13,9 @@ defmodule LocalHospitalService.Accounts.UserToken do
   @change_email_validity_in_days 7
   @session_validity_in_days 60
 
+  # Expiration time for magic link tokens
+  @magic_link_validity_in_days 1
+
   schema "users_tokens" do
     field :token, :binary
     field :context, :string
@@ -130,6 +133,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
 
   defp days_for_context("confirm"), do: @confirm_validity_in_days
   defp days_for_context("reset_password"), do: @reset_password_validity_in_days
+  defp days_for_context("magic_link"), do: @magic_link_validity_in_days
 
   @doc """
   Checks if the token is valid and returns its underlying lookup query.

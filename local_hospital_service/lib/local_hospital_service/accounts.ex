@@ -361,4 +361,21 @@ defmodule LocalHospitalService.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  @doc """
+  Generates and sends magic link for the given email.
+
+  If the email does not correspond to any user, if fails silently.
+  """
+  def generate_magic_link(email) do
+    if user = get_user_by_email(email) do
+      {email_token, token} = UserToken.build_email_token(user, "magic_link")
+      Repo.insert!(token)
+
+      UserNotifier.deliver_magic_link(
+        user,
+        "#{LocalHospitalServiceWeb.Endpoint.url()}/users/log_in?token=#{email_token}"
+      )
+    end
+  end
 end

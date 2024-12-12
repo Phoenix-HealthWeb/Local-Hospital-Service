@@ -76,4 +76,24 @@ defmodule LocalHospitalService.Accounts.UserNotifier do
     ==============================
     """)
   end
+
+  @doc """
+  Delivers a magic link to login.
+  """
+  def deliver_magic_link(user, url) do
+    deliver(user.email, "Sign in to LocalHospitalService", """
+
+    ==============================
+
+    Hi #{user.email},
+
+    This is your one-time link to login:
+
+    #{url}
+
+    If you didn't try to login, please ignore this.
+
+    ==============================
+    """)
+  end
 end
