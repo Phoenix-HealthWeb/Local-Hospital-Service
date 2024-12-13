@@ -92,6 +92,8 @@ defmodule LocalHospitalService.Accounts.UserNotifier do
     <a href="#{url}" target="_blank"
       style="color: blue; text-decoration: underline">#{url}</a>
 
+    This link will expire in 1 hour.
+
     If you didn't try to login, please ignore this.
 
     ==============================

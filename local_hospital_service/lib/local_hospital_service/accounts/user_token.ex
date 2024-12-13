@@ -8,13 +8,13 @@ defmodule LocalHospitalService.Accounts.UserToken do
 
   # It is very important to keep the reset password token expiry short,
   # since someone with access to the email may take over the account.
-  @reset_password_validity_in_days 1
-  @confirm_validity_in_days 7
-  @change_email_validity_in_days 7
-  @session_validity_in_days 60
+  @reset_password_validity_in_minutes 1 * 24 * 60
+  @confirm_validity_in_minutes 7 * 24 * 60
+  @change_email_validity_in_minutes 7 * 24 * 60
+  @session_validity_in_minutes 60 * 24 * 60
 
   # Expiration time for magic link tokens
-  @magic_link_validity_in_days 1
+  @magic_link_validity_in_minutes 60
 
   schema "users_tokens" do
     field :token, :binary
@@ -57,12 +57,12 @@ defmodule LocalHospitalService.Accounts.UserToken do
   The query returns the user found by the token, if any.
 
   The token is valid if it matches the value in the database and it has
-  not expired (after @session_validity_in_days).
+  not expired (after @session_validity_in_minutes).
   """
   def verify_session_token_query(token) do
     query =
       from token in by_token_and_context_query(token, "session"),
-        where: token.inserted_at > ago(@session_validity_in_days, "day"),
+        where: token.inserted_at > ago(@session_validity_in_minutes, "minute"),
         select: token.user
 
     {:ok, query}
@@ -128,11 +128,11 @@ defmodule LocalHospitalService.Accounts.UserToken do
     case Base.url_decode64(token, padding: false) do
       {:ok, decoded_token} ->
         hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
-        days = days_for_context(context)
+        minutes = minutes_for_context(context)
 
         query =
           from token in by_token_and_context_query(hashed_token, context),
-            where: token.inserted_at > ago(^days, "day"),
+            where: token.inserted_at > ago(^minutes, "minute"),
             select: token
 
         {:ok, query}
@@ -142,9 +142,9 @@ defmodule LocalHospitalService.Accounts.UserToken do
     end
   end
 
-  defp days_for_context("confirm"), do: @confirm_validity_in_days
-  defp days_for_context("reset_password"), do: @reset_password_validity_in_days
-  defp days_for_context("magic_link"), do: @magic_link_validity_in_days
+  defp minutes_for_context("confirm"), do: @confirm_validity_in_minutes
+  defp minutes_for_context("reset_password"), do: @reset_password_validity_in_minutes
+  defp minutes_for_context("magic_link"), do: @magic_link_validity_in_minutes
 
   @doc """
   Checks if the token is valid and returns its underlying lookup query.
@@ -157,7 +157,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
   the starting point by this function.
 
   The given token is valid if it matches its hashed counterpart in the
-  database and if it has not expired (after @change_email_validity_in_days).
+  database and if it has not expired (after @change_email_validity_in_minutes).
   The context must always start with "change:".
   """
   def verify_change_email_token_query(token, "change:" <> _ = context) do
@@ -167,7 +167,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
 
         query =
           from token in by_token_and_context_query(hashed_token, context),
-            where: token.inserted_at > ago(@change_email_validity_in_days, "day")
+            where: token.inserted_at > ago(@change_email_validity_in_minutes, "minute")
 
         {:ok, query}
 
