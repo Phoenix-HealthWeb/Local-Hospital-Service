@@ -89,7 +89,8 @@ defmodule LocalHospitalService.Accounts.UserNotifier do
 
     This is your one-time link to login:
 
-    #{url}
+    <a href="#{url}" target="_blank"
+      style="color: blue; text-decoration: underline">#{url}</a>
 
     If you didn't try to login, please ignore this.
 

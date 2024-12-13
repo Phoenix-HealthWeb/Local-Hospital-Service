@@ -38,7 +38,7 @@ defmodule LocalHospitalServiceWeb.UserLoginMagicLinkLive do
   Called when the user submits the form.
   It triggers the relative POST request defined on the form
   """
-  def handle_event("consume_magic_link", %{"token" => token}, socket) do
+  def handle_event("consume_magic_link", %{"token" => _}, socket) do
     {:noreply, assign(socket, trigger_submit: true)}
   end
 end
