@@ -12,7 +12,7 @@ defmodule LocalHospitalServiceWeb.UserSessionController do
   Called when the user makes a POST request to consume the magic link
   """
   def create(conn, %{"_action" => "magic_link", "token" => token} = user_params) do
-    Accounts.verify_magic_link(token)
+    Accounts.verify_and_invalidate_magic_link(token)
     |> case do
       {:ok, user} ->
         conn

@@ -114,6 +114,17 @@ defmodule LocalHospitalService.Accounts.UserToken do
   see `verify_change_email_token_query/2`.
   """
   def verify_email_token_query(token, context) do
+    # Use the full token query to get the user
+    case verify_email_token_query_full_token(token, context) do
+      {:ok, query} -> from q in query, select: q.user
+      :error -> :error
+    end
+  end
+
+  @doc """
+  Like the above verify_email_token_query/2, but returns the full token row instead
+  """
+  def verify_email_token_query_full_token(token, context) do
     case Base.url_decode64(token, padding: false) do
       {:ok, decoded_token} ->
         hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
@@ -122,7 +133,7 @@ defmodule LocalHospitalService.Accounts.UserToken do
         query =
           from token in by_token_and_context_query(hashed_token, context),
             where: token.inserted_at > ago(^days, "day"),
-            select: token.user
+            select: token
 
         {:ok, query}
 

@@ -381,11 +381,19 @@ defmodule LocalHospitalService.Accounts do
 
   @doc """
   Verifies the magic link token and returns the user if valid.
+  Additionally, the token is invalidated.
   """
-  def verify_magic_link(token) do
-    with {:ok, query} <- UserToken.verify_email_token_query(token, "magic_link"),
-         %User{} = user <- Repo.one(query) do
-      {:ok, user}
+  def verify_and_invalidate_magic_link(token) do
+    with {:ok, query} <- UserToken.verify_email_token_query_full_token(token, "magic_link") do
+      Repo.transaction(fn ->
+        %UserToken{} = token_row = Repo.one(query)
+        Repo.delete(token_row)
+        token_row.user
+      end)
+      |> case do
+        {:ok, user} -> {:ok, user}
+        _ -> :error
+      end
     else
       _ -> :error
     end
