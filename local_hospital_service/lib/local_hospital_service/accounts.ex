@@ -385,13 +385,17 @@ defmodule LocalHospitalService.Accounts do
   """
   def verify_and_invalidate_magic_link(token) do
     with {:ok, query} <- UserToken.verify_email_token_query_full_token(token, "magic_link") do
-      Repo.transaction(fn ->
-        %UserToken{} = token_row = Repo.one(query)
-        Repo.delete(token_row)
-        token_row.user
-      end)
-      |> case do
-        {:ok, user} -> {:ok, user}
+      try do
+        # If ok, the transaction will return {:ok, return_value}
+        Repo.transaction(fn ->
+          # If the token does not exist, Repo.one/1 will return nil, so the match will fail
+          # and transaction will be rolled back automatically
+          %UserToken{} = token_row = Repo.one(query)
+          Repo.delete(token_row)
+
+          token_row.user
+        end)
+      rescue
         _ -> :error
       end
     else
