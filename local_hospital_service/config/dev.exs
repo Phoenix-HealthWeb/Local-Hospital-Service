@@ -81,3 +81,6 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# For development only, we show a checkbox to auto-redirect to the magic link page
+config :local_hospital_service, :show_auto_redirect_to_magic_link, true

@@ -2,6 +2,12 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
   alias LocalHospitalService.Accounts
   use LocalHospitalServiceWeb, :live_view
 
+  @show_auto_redirect_to_magic_link Application.compile_env(
+                                      :local_hospital_service,
+                                      :show_auto_redirect_to_magic_link,
+                                      false
+                                    )
+
   def render(assigns) do
     ~H"""
     <div :if={@status == :input_email} class="mx-auto max-w-sm">
@@ -25,6 +31,15 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
         class="my-0 py-0"
       >
         <.input field={@form[:email]} type="email" label="Email" required />
+        <!-- DEV ONLY: auto redirect to magic link page if enabled in config -->
+        <:actions :if={@show_auto_redirect_to_magic_link}>
+          <.input
+            field={@form[:redirect_to_magic_link]}
+            type="checkbox"
+            label="DEV ONLY: auto redirect to magic link page"
+          />
+        </:actions>
+
         <:actions>
           <.button
             class="w-full flex place-content-center place-items-center gap-2"
@@ -52,8 +67,13 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
     email = Phoenix.Flash.get(socket.assigns.flash, :email)
     form = to_form(%{"email" => email}, as: "user")
 
-    {:ok, assign(socket, form: form, status: :input_email, skip_account_header: true),
-     temporary_assigns: [form: form]}
+    {:ok,
+     assign(socket,
+       form: form,
+       status: :input_email,
+       skip_account_header: true,
+       show_auto_redirect_to_magic_link: @show_auto_redirect_to_magic_link
+     ), temporary_assigns: [form: form]}
   end
 
   @doc """
@@ -63,12 +83,23 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
   def handle_event("send-magic-link", params, socket) do
     %{"user" => %{"email" => email}} = params
 
-    Accounts.generate_magic_link(email)
+    token = Accounts.generate_magic_link(email)
 
     socket =
       socket
       |> assign(:status, :link_sent)
       |> assign(:target_email, email)
+
+    # Only if allowed and requested, auto-redirect to the magic link page without the need to open the email link
+    socket =
+      if token && @show_auto_redirect_to_magic_link &&
+           params["user"]["redirect_to_magic_link"] == "true" do
+        push_navigate(socket,
+          to: ~p"/users/log_in/#{token}"
+        )
+      else
+        socket
+      end
 
     {:noreply, socket}
   end

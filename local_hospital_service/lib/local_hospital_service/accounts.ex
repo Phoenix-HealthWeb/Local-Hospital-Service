@@ -366,6 +366,8 @@ defmodule LocalHospitalService.Accounts do
   Generates and sends magic link for the given email.
 
   If the email does not correspond to any user, if fails silently.
+
+  Returns the generated token, or nil otherwise
   """
   def generate_magic_link(email) do
     if user = get_user_by_email(email) do
@@ -376,6 +378,10 @@ defmodule LocalHospitalService.Accounts do
         user,
         "#{LocalHospitalServiceWeb.Endpoint.url()}/users/log_in/#{email_token}"
       )
+
+      email_token
+    else
+      nil
     end
   end
 
