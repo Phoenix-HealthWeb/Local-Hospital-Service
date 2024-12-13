@@ -8,10 +8,22 @@ defmodule LocalHospitalServiceWeb.UserSessionController do
     create(conn, params, "Account created successfully!")
   end
 
-  def create(conn, %{"_action" => "magic_link"} = params) do
-    IO.puts("Magic link")
-    # TODO: Custom logic
-    #create(conn, params, "Account created successfully!")
+  @doc """
+  Called when the user makes a POST request to consume the magic link
+  """
+  def create(conn, %{"_action" => "magic_link", "token" => token} = user_params) do
+    Accounts.verify_magic_link(token)
+    |> case do
+      {:ok, user} ->
+        conn
+        |> put_flash(:info, "Welcome back!")
+        |> UserAuth.log_in_user(user, user_params)
+
+      :error ->
+        conn
+        |> put_flash(:error, "The link might be expired or invalid")
+        |> redirect(to: ~p"/users/log_in")
+    end
   end
 
   def create(conn, %{"_action" => "password_updated"} = params) do

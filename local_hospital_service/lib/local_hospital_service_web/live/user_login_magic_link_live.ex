@@ -11,12 +11,12 @@ defmodule LocalHospitalServiceWeb.UserLoginMagicLinkLive do
         </:subtitle>
       </.header>
 
-      <!-- TODO: Does not perform POST -->
       <.simple_form
         for={@form}
         id="consume_magic_link_form"
-        phx-submit="consume_magic_link"
         method="post"
+        phx-submit="consume_magic_link"
+        phx-trigger-action={@trigger_submit}
         action={~p"/users/log_in?_action=magic_link"}
       >
         <input type="hidden" name={@form[:token].name} value={@form[:token].value} />
@@ -29,7 +29,16 @@ defmodule LocalHospitalServiceWeb.UserLoginMagicLinkLive do
   end
 
   def mount(%{"token" => token}, _session, socket) do
-    form = to_form(%{"token" => token}, as: "magic_link")
-    {:ok, assign(socket, form: form), temporary_assigns: [form: nil]}
+    form = to_form(%{"token" => token})
+
+    {:ok, assign(socket, form: form, trigger_submit: false), temporary_assigns: [form: nil]}
+  end
+
+  @doc """
+  Called when the user submits the form.
+  It triggers the relative POST request defined on the form
+  """
+  def handle_event("consume_magic_link", %{"token" => token}, socket) do
+    {:noreply, assign(socket, trigger_submit: true)}
   end
 end
