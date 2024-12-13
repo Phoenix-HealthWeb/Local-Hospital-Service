@@ -1,5 +1,5 @@
 defmodule LocalHospitalServiceWeb.UserLoginLive do
-alias LocalHospitalService.Accounts
+  alias LocalHospitalService.Accounts
   use LocalHospitalServiceWeb, :live_view
 
   def render(assigns) do
@@ -40,7 +40,8 @@ alias LocalHospitalService.Accounts
       <.header class="text-center">
         Check your email!
         <:subtitle>
-          If <span class="font-semibold text-brand"><%= @target_email %></span> is in our database, you will receive a one-time link to login.
+          If <span class="font-semibold text-brand"><%= @target_email %></span>
+          is in our database, you will receive a one-time link to login.
         </:subtitle>
       </.header>
     </div>
@@ -50,7 +51,9 @@ alias LocalHospitalService.Accounts
   def mount(_params, _session, socket) do
     email = Phoenix.Flash.get(socket.assigns.flash, :email)
     form = to_form(%{"email" => email}, as: "user")
-    {:ok, assign(socket, form: form, status: :input_email), temporary_assigns: [form: form]}
+
+    {:ok, assign(socket, form: form, status: :input_email, skip_account_header: true),
+     temporary_assigns: [form: form]}
   end
 
   @doc """

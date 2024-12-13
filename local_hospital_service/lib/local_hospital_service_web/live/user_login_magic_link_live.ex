@@ -31,7 +31,8 @@ defmodule LocalHospitalServiceWeb.UserLoginMagicLinkLive do
   def mount(%{"token" => token}, _session, socket) do
     form = to_form(%{"token" => token})
 
-    {:ok, assign(socket, form: form, trigger_submit: false), temporary_assigns: [form: nil]}
+    {:ok, assign(socket, form: form, trigger_submit: false, skip_account_header: true),
+     temporary_assigns: [form: nil]}
   end
 
   @doc """
