@@ -83,7 +83,7 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
   def handle_event("send-magic-link", params, socket) do
     %{"user" => %{"email" => email}} = params
 
-    token = Accounts.generate_magic_link(email)
+    token = Accounts.generate_magic_link(email, &url(~p"/users/log_in/#{&1}"))
 
     socket =
       socket

@@ -369,14 +369,14 @@ defmodule LocalHospitalService.Accounts do
 
   Returns the generated token, or nil otherwise
   """
-  def generate_magic_link(email) do
+  def generate_magic_link(email, magic_link_url_fun) when is_function(magic_link_url_fun, 1) do
     if user = get_user_by_email(email) do
       {email_token, token} = UserToken.build_email_token(user, "magic_link")
       Repo.insert!(token)
 
       UserNotifier.deliver_magic_link(
         user,
-        "#{LocalHospitalServiceWeb.Endpoint.url()}/users/log_in/#{email_token}"
+        magic_link_url_fun.(email_token)
       )
 
       email_token
