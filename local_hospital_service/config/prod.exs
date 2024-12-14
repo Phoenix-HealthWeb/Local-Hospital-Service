@@ -20,8 +20,12 @@ config :swoosh, local: true
 config :logger, level: :info
 
 # Configure the host for the RabbitMQ server
-config :local_hospital_service, LocalHospitalService.NdbSyncronization,
-  rabbit_host: "rabbitmq"
+config :local_hospital_service, LocalHospitalService.NdbSyncronization, rabbit_host: "rabbitmq"
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
+
+# Enable dev routes for dashboard and mailbox
+# NOTE: This is for practicity when performing demos for the application,
+# in a real-world scenario, this should not be publicly accessible
+config :local_hospital_service, dev_routes: true

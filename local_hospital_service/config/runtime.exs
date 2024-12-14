@@ -50,7 +50,8 @@ if config_env() == :prod do
   config :local_hospital_service, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :local_hospital_service, LocalHospitalServiceWeb.Endpoint,
-    url: [host: host, port: 443, scheme: "https"],
+    # Explicitly configure those options for mails to correctly point to the right url
+    url: [host: host, port: port, scheme: "http"],
     http: [
       # Enable IPv6 and bind on all interfaces.
       # Set it to  {0, 0, 0, 0, 0, 0, 0, 1} for local network only access.
