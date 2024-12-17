@@ -5,6 +5,9 @@ defmodule LocalHospitalService.Api do
 
   require Logger
 
+  @doc """
+  Performs a GET request to the NDB Rest API.
+  """
   def get(path) do
     url = get_url(path)
 
@@ -22,6 +25,11 @@ defmodule LocalHospitalService.Api do
     end
   end
 
+  @doc """
+    Performs a POST request to the NDB Rest API.
+
+    Example of call: `LocalHospitalService.Api.post("practitioners", %{practitioner: %{email: "example@gmail.com", date_of_birth: "2000-12-26", forename: "John", surname: "Smith", qualification: "Nurse"}})`
+  """
   def post(path, %{} = body) do
     url = get_url(path)
     stringified_body = Jason.encode!(body)
@@ -51,6 +59,10 @@ defmodule LocalHospitalService.Api do
   end
 
   defp get_url(path) do
-    Application.get_env(:local_hospital_service, __MODULE__)[:ndb_url] <> path
+    # Removes the leading slash from the path, only if present
+    # and prepends the full url
+    path
+    |> String.replace(~r{^/}, "")
+    |> (&(Application.get_env(:local_hospital_service, __MODULE__)[:ndb_url] <> &1)).()
   end
 end
