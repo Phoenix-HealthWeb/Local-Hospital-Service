@@ -37,6 +37,7 @@ services:
             - PHX_HOST=${PHX_HOST}
             - PORT=${PHX_PORT}
             - FORCE_MIGRATIONS=true
+            - NDB_URL=${NDB_URL}
         ports:
             - "${PHX_PORT}:${PHX_PORT}"
         depends_on:
