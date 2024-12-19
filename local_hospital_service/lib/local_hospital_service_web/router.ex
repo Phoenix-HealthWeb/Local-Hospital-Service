@@ -19,6 +19,12 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/", LocalHospitalServiceWeb do
     pipe_through :browser
+    live "/wards", WardLive.Index, :index
+    live "/wards/new", WardLive.Index, :new
+    live "/wards/:id/edit", WardLive.Index, :edit
+
+    live "/wards/:id", WardLive.Show, :show
+    live "/wards/:id/show/edit", WardLive.Show, :edit
 
     get "/", PageController, :home
   end

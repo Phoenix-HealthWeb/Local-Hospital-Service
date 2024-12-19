@@ -8,11 +8,11 @@ defmodule LocalHospitalService.HospitalFixtures do
   Generate a ward.
   """
   def ward_fixture(attrs \\ %{}) do
+    # Attributes
     {:ok, ward} =
       attrs
       |> Enum.into(%{
-        \: "some \\",
-        \description: "some \\description",
+        description: "some description",
         name: "some name"
       })
       |> LocalHospitalService.Hospital.create_ward()
