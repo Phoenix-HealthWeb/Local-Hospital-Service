@@ -6,7 +6,7 @@ defmodule LocalHospitalService.Accounts do
   import Ecto.Query, warn: false
   alias LocalHospitalService.Repo
 
-  alias LocalHospitalService.Accounts.{User, UserToken, UserNotifier}
+  alias LocalHospitalService.Accounts.{UserToken, UserNotifier}
 
   ## Database getters
 
