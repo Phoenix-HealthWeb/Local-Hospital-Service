@@ -23,7 +23,6 @@ defmodule LocalHospitalService.Accounts do
 
   """
   def get_user_by_email(email) when is_binary(email) do
-    # TODO:
     LocalHospitalService.Api.Practitioner.get_by_email(email)
   end
 
