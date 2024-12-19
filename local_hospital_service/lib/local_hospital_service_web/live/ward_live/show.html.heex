@@ -1,0 +1,28 @@
+<.header>
+  Ward <%= @ward.id %>
+  <:subtitle>This is a ward record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/wards/#{@ward}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit ward</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Ward ID"><%= @ward.id %></:item>
+  <:item title="Ward Name"><%= @ward.name %></:item>
+  <:item title="Ward Description"><%= @ward.description %></:item>
+</.list>
+
+<.back navigate={~p"/wards"}>Back to wards</.back>
+
+<.modal :if={@live_action == :edit} id="ward-modal" show on_cancel={JS.patch(~p"/wards/#{@ward}")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.WardLive.FormComponent}
+    id={@ward.id}
+    title={@page_title}
+    action={@live_action}
+    ward={@ward}
+    patch={~p"/wards/#{@ward}"}
+  />
+</.modal>

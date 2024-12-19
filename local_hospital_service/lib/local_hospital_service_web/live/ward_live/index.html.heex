@@ -1,0 +1,43 @@
+<.header>
+  Listing Wards
+  <:actions>
+    <.link patch={~p"/wards/new"}>
+      <.button>New Ward</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="wards"
+  rows={@streams.wards}
+  row_click={fn {_id, ward} -> JS.navigate(~p"/wards/#{ward}") end}
+>
+  <:col :let={{_id, ward}} label="Ward ID"><%= ward.id %></:col>
+  <:col :let={{_id, ward}} label="Ward Name"><%= ward.name %></:col>
+  <:col :let={{_id, ward}} label="Ward Description"><%= ward.description %></:col>
+  <:action :let={{_id, ward}}>
+    <div class="sr-only">
+      <.link navigate={~p"/wards/#{ward}"}>Show</.link>
+    </div>
+    <.link patch={~p"/wards/#{ward}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, ward}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: ward.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="ward-modal" show on_cancel={JS.patch(~p"/wards")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.WardLive.FormComponent}
+    id={@ward.id || :new}
+    title={@page_title}
+    action={@live_action}
+    ward={@ward}
+    patch={~p"/wards"}
+  />
+</.modal>
