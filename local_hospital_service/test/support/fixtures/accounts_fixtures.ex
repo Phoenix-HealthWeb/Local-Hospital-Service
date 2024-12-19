@@ -18,8 +18,6 @@ defmodule LocalHospitalService.AccountsFixtures do
     {:ok, user} =
       attrs
       |> valid_user_attributes()
-      |> LocalHospitalService.Accounts.register_user()
-
     user
   end
 
