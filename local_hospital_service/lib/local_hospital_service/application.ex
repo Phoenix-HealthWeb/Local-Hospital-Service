@@ -23,9 +23,7 @@ defmodule LocalHospitalService.Application do
       # Start to serve requests, typically the last entry
       LocalHospitalServiceWeb.Endpoint,
       # Start the NDB Syncronization supervisor
-      LocalHospitalService.NdbSyncronization.Supervisor,
-      # TODO: Mock user APIs
-      LocalHospitalService.Api.User
+      LocalHospitalService.NdbSyncronization.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

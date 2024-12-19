@@ -13,13 +13,6 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
     <div :if={@status == :input_email} class="mx-auto max-w-sm">
       <.header class="text-center">
         Log in to account
-        <:subtitle>
-          Don't have an account?
-          <.link navigate={~p"/users/register"} class="font-semibold text-brand hover:underline">
-            Sign up
-          </.link>
-          for an account now.
-        </:subtitle>
       </.header>
 
       <.simple_form
