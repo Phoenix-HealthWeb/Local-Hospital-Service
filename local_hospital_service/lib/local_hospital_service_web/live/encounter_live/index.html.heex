@@ -13,7 +13,7 @@
   row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
 >
   <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
-  <.col :let={{_id, encounter}} label="Ward"><%= encounter.ward.name %></:col>  <!-- Ward -->
+  <:col :let={{_id, encounter}} label="Ward"><%= encounter.ward.name %></:col>  <!-- Ward -->
   <:col :let={{_id, encounter}} label="Reason"><%= encounter.reason %></:col>
   <:col :let={{_id, encounter}} label="Date time"><%= encounter.date_time %></:col>
   <:col :let={{_id, encounter}} label="Patient"><%= encounter.patient %></:col>
