@@ -19,14 +19,9 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
-        <.input field={@form[:"\\"]} type="text" label="\" />
         <.input field={@form[:priority]} type="number" label="Priority" />
-        <.input field={@form[:"\\"]} type="text" label="\" />
-        <.input field={@form[:"\\"]} type="text" label="\" />
         <.input field={@form[:reason]} type="text" label="Reason" />
-        <.input field={@form[:"\\"]} type="text" label="\" />
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
-        <.input field={@form[:"\\"]} type="text" label="\" />
         <.input field={@form[:patient]} type="text" label="Patient" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Encounter</.button>

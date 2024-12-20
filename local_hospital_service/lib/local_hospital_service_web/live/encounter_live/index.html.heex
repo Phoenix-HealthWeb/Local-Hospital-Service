@@ -6,22 +6,21 @@
     </.link>
   </:actions>
 </.header>
-<!-- warning missing required slot col ? -->
+
 <.table
   id="encounters"
   rows={@streams.encounters}
   row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
 >
-  <thead>
-    <tr>
-      <th>Priority</th>
-      <th>Ward</th>
-      <th>Reason</th>
-      <th>Date time</th>
-      <th>Patient</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
+  <:col>
+    <th>Priority</th>
+    <th>Ward</th>
+    <th>Reason</th>
+    <th>Date time</th>
+    <th>Patient</th>
+    <th>Actions</th>
+  </:col>
+
   <tbody>
     <%= for {_id, encounter} <- @streams.encounters do %>
       <tr>
