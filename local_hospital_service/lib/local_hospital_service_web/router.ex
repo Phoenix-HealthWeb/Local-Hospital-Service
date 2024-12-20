@@ -43,6 +43,9 @@ defmodule LocalHospitalServiceWeb.Router do
       live_dashboard "/dashboard", metrics: LocalHospitalServiceWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+
+
+
   end
 
   ## Authentication routes
@@ -57,6 +60,18 @@ defmodule LocalHospitalServiceWeb.Router do
     end
 
     post "/users/log_in", UserSessionController, :create
+  end
+
+  scope "/ward/:id", LocalHospitalServiceWeb do
+    pipe_through :browser
+
+    get "/", PatientController, :indexxxx
+  end
+
+  scope "/wards", LocalHospitalServiceWeb do
+    pipe_through :browser
+
+    get "/", PatientController, :index
   end
 
   scope "/", LocalHospitalServiceWeb do

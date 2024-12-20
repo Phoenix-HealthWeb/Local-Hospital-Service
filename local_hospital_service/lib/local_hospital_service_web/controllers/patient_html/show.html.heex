@@ -1,0 +1,16 @@
+<.header>
+  Patient {@patient.id}
+  <:subtitle>This is a patient record from your database.</:subtitle>
+  <:actions>
+    
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Name">{@patient.name}</:item>
+  <:item title="Colorcode">{@patient.colorcode}</:item>
+  <:item title="Symptom description">{@patient.symptom_description}</:item>
+  <:item title="Ward">{@patient.ward}</:item>
+</.list>
+
+<.back navigate={~p"/patients"}>Back to patients</.back>

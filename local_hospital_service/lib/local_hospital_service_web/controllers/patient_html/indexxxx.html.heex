@@ -1,0 +1,26 @@
+<.header>
+  Patients in the Hospital
+  <:actions>
+    <.link href={~p"/patients/new"}>
+      
+    </.link>
+  </:actions>
+</.header>
+
+<.table id="patients" rows={@patients} row_click={&JS.navigate(~p"/patients/#{&1}")}>
+  <:col :let={patient} label="Name">{patient.name}</:col>
+  <:col :let={patient} label="Colorcode">{patient.colorcode}</:col>
+  <:col :let={patient} label="Symptom">{patient.symptom}</:col>
+  <:col :let={patient} label="Ward">{patient.ward}</:col>
+  <:action :let={patient}>
+    <div class="sr-only">
+      <.link navigate={~p"/patients/#{patient}"}>Show</.link>
+    </div>
+    
+  </:action>
+  <:action :let={patient}>
+    <.link href={~p"/patients/#{patient}"} method="delete" data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

@@ -1,0 +1,5 @@
+Jane Smith, bianco, Moderate fever, General
+John Doe, rosso, Severe pain, ER
+Frank Nano, arancione, Scholiosis, General
+Jack Jackson, verde, back pain, General
+Milly Gamble, verde, broken leg, ER

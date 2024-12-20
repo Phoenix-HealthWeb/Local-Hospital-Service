@@ -1,0 +1,8 @@
+<.header>
+  Edit Patient {@patient.id}
+  <:subtitle>Use this form to manage patient records in your database.</:subtitle>
+</.header>
+
+<.patient_form changeset={@changeset} action={~p"/patients/#{@patient}"} />
+
+<.back navigate={~p"/patients"}>Back to patients</.back>
