@@ -1,7 +1,7 @@
 <.header>
   Listing Wards
   <:actions>
-    <.link patch={~p"/wards/new"}>
+    <.link patch={~p"/admin/wards/new"}>
       <.button>New Ward</.button>
     </.link>
   </:actions>
@@ -10,20 +10,20 @@
 <.table
   id="wards"
   rows={@streams.wards}
-  row_click={fn {_id, ward} -> JS.navigate(~p"/wards/#{ward}") end}
+  row_click={fn {_id, ward} -> JS.navigate(~p"/admin/wards/#{ward.id}") end}
 >
   <:col :let={{_id, ward}} label="Ward ID"><%= ward.id %></:col>
   <:col :let={{_id, ward}} label="Ward Name"><%= ward.name %></:col>
   <:col :let={{_id, ward}} label="Ward Description"><%= ward.description %></:col>
   <:action :let={{_id, ward}}>
     <div class="sr-only">
-      <.link navigate={~p"/wards/#{ward}"}>Show</.link>
+      <.link navigate={~p"/admin/wards/#{ward.id}"}>Show</.link>
     </div>
-    <.link patch={~p"/wards/#{ward}/edit"}>Edit</.link>
+    <.link patch={~p"/admin/wards/#{ward.id}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, ward}}>
     <.link
-      phx-click={JS.push("delete", value: %{id: ward.id}) |> hide("##{id}")}
+      phx-click={JS.push("delete", value: %{id: ward.id}) |> hide("##{id}")} 
       data-confirm="Are you sure?"
     >
       Delete
@@ -31,13 +31,13 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="ward-modal" show on_cancel={JS.patch(~p"/wards")}>
+<.modal :if={@live_action in [:new, :edit]} id="ward-modal" show on_cancel={JS.patch(~p"/admin/wards")}>
   <.live_component
     module={LocalHospitalServiceWeb.WardLive.FormComponent}
     id={@ward.id || :new}
     title={@page_title}
     action={@live_action}
     ward={@ward}
-    patch={~p"/wards"}
+    patch={~p"/admin/wards"}
   />
 </.modal>

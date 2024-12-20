@@ -1,28 +1,33 @@
 <.header>
-  Ward <%= @ward.id %>
-  <:subtitle>This is a ward record from your database.</:subtitle>
+  Ward Details
   <:actions>
-    <.link patch={~p"/wards/#{@ward}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit ward</.button>
+    <.link patch={~p"/admin/wards/#{@ward.id}/edit"}>
+      <.button>Edit Ward</.button>
+    </.link>
+    <.link
+      phx-click={JS.push("delete", value: %{id: @ward.id}) |> hide("##{@ward.id}")} 
+      data-confirm="Are you sure?"
+    >
+      <.button>Delete</.button>
     </.link>
   </:actions>
 </.header>
 
-<.list>
-  <:item title="Ward ID"><%= @ward.id %></:item>
-  <:item title="Ward Name"><%= @ward.name %></:item>
-  <:item title="Ward Description"><%= @ward.description %></:item>
-</.list>
+<.back navigate={~p"/admin/wards"}>Back to wards</.back>
 
-<.back navigate={~p"/wards"}>Back to wards</.back>
-
-<.modal :if={@live_action == :edit} id="ward-modal" show on_cancel={JS.patch(~p"/wards/#{@ward}")}>
+<.modal :if={@live_action == :edit} id="ward-modal" show on_cancel={JS.patch(~p"/admin/wards")}>
   <.live_component
     module={LocalHospitalServiceWeb.WardLive.FormComponent}
     id={@ward.id}
     title={@page_title}
     action={@live_action}
     ward={@ward}
-    patch={~p"/wards/#{@ward}"}
+    patch={~p"/admin/wards"}
   />
 </.modal>
+
+<div>
+  <h3><%= @ward.name %></h3>
+  <p><strong>Description:</strong> <%= @ward.description %></p>
+  <p><strong>ID:</strong> <%= @ward.id %></p>
+</div>
