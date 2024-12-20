@@ -4,8 +4,7 @@ defmodule LocalHospitalService.Hospital.Ward do
 
   schema "wards" do
     field :name, :string
-    field :"\\", :string
-    field :"\\description", :string
+    field :"description", :string
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +12,7 @@ defmodule LocalHospitalService.Hospital.Ward do
   @doc false
   def changeset(ward, attrs) do
     ward
-    |> cast(attrs, [:"\\", :name, :"\\description"])
-    |> validate_required([:"\\", :name, :"\\description"])
+    |> cast(attrs, [:name, :"description"])
+    |> validate_required([:name, :"description"])
   end
 end

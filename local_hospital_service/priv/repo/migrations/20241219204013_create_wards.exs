@@ -3,9 +3,8 @@ defmodule LocalHospitalService.Repo.Migrations.CreateWards do
 
   def change do
     create table(:wards) do
-      add :"\\", :string
       add :name, :string
-      add :"\\description", :text
+      add :"description", :text
 
       timestamps(type: :utc_datetime)
     end
