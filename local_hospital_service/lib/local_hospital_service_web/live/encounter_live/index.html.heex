@@ -12,39 +12,27 @@
   rows={@streams.encounters}
   row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
 >
-  <:col>
-    <th>Priority</th>
-    <th>Ward</th>
-    <th>Reason</th>
-    <th>Date time</th>
-    <th>Patient</th>
-    <th>Actions</th>
-  </:col>
+  <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
+  <.col :let={{_id, encounter}} label="Ward"><%= encounter.ward.name %></:col>  <!-- Ward -->
+  <:col :let={{_id, encounter}} label="Reason"><%= encounter.reason %></:col>
+  <:col :let={{_id, encounter}} label="Date time"><%= encounter.date_time %></:col>
+  <:col :let={{_id, encounter}} label="Patient"><%= encounter.patient %></:col>
 
-  <tbody>
-    <%= for {_id, encounter} <- @streams.encounters do %>
-      <tr>
-        <td><%= encounter.priority %></td>
-        <td><%= encounter.ward.name %></td>  <!-- Ward -->
-        <td><%= encounter.reason %></td>
-        <td><%= encounter.date_time %></td>
-        <td><%= encounter.patient %></td>
+  <:action :let={{_id, encounter}}>
+    <div class="sr-only">
+      <.link navigate={~p"/encounters/#{encounter}"}>Show</.link>
+    </div>
+    <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
+  </:action>
 
-        <td>
-          <div class="sr-only">
-            <.link navigate={~p"/encounters/#{encounter}"}>Show</.link>
-          </div>
-          <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
-          <.link
-            phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{encounter.id}")} 
-            data-confirm="Are you sure?"
-          >
-            Delete
-          </.link>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
+  <:action :let={{id, encounter}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{id}")} 
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
 </.table>
 
 <.modal :if={@live_action in [:new, :edit]} id="encounter-modal" show on_cancel={JS.patch(~p"/encounters")}>
