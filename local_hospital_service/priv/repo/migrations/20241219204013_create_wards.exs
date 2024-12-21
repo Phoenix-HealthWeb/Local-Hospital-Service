@@ -4,7 +4,7 @@ defmodule LocalHospitalService.Repo.Migrations.CreateWards do
   def change do
     create table(:wards) do
       add :name, :string
-      add :description, :text
+      add :description, :string
 
       timestamps(type: :utc_datetime)
     end
