@@ -23,6 +23,13 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
         <.input field={@form[:reason]} type="text" label="Reason" />
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
         <.input field={@form[:patient]} type="text" label="Patient" />
+
+        <!-- Ward select -->
+        <.input field={@form[:ward_id]} type="select" options={@wards} prompt="Select a Ward" label="Ward" />
+
+        <!-- Status select -->
+        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" />
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Encounter</.button>
         </:actions>
@@ -32,13 +39,14 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
   end
 
   @impl true
-  def update(%{encounter: encounter} = assigns, socket) do
+  def update(%{encounter: encounter, wards: wards} = assigns, socket) do
     {:ok,
      socket
      |> assign(assigns)
      |> assign_new(:form, fn ->
        to_form(Hospital.change_encounter(encounter))
-     end)}
+     end)
+     |> assign(:wards, wards)}
   end
 
   @impl true
