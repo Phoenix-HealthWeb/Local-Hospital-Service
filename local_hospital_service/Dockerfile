@@ -94,6 +94,9 @@ COPY --from=builder --chown=nobody:root /app/_build/${MIX_ENV}/rel/local_hospita
 # This is required so to allow Phoenix to write the sqlite db
 RUN mkdir -p /backup /etc/local_hospital_service && chown -R nobody /etc/local_hospital_service
 
+# Ensure the server script is executable
+RUN chmod +x /app/bin/server
+
 USER nobody
 
 # If using an environment that doesn't automatically reap zombie processes, it is
