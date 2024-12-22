@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 config :local_hospital_service, LocalHospitalService.Repo,
-  database: Path.expand("../local_hospital_service_dev.db", __DIR__),
+  database: Path.expand("../volumes/sqlite-data/local_hospital_service.db", __DIR__),
   pool_size: 5,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true
