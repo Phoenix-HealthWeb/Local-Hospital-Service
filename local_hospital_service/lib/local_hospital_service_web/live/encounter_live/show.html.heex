@@ -14,6 +14,18 @@
   <:item title="Reason"><%= @encounter.reason %></:item>
   <:item title="Date time"><%= @encounter.date_time %></:item>
   <:item title="Patient"><%= @encounter.patient %></:item>
+  
+  <!-- Status -->
+  <:item title="Status">
+    <%= case @encounter.status do %>
+      <% "queue" -> %>
+        <span class="badge badge-info">In Queue</span>
+      <% "in_visit" -> %>
+        <span class="badge badge-success">In Visit</span>
+      <% _ -> %>
+        <span class="badge badge-secondary">Unknown</span>
+    <% end %>
+  </:item>
 </.list>
 
 <.back navigate={~p"/encounters"}>Back to encounters</.back>

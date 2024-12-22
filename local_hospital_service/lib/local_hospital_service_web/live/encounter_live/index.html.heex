@@ -17,6 +17,18 @@
   <:col :let={{_id, encounter}} label="Reason"><%= encounter.reason %></:col>
   <:col :let={{_id, encounter}} label="Date time"><%= encounter.date_time %></:col>
   <:col :let={{_id, encounter}} label="Patient"><%= encounter.patient %></:col>
+  
+  <!-- Added column for status -->
+  <:col :let={{_id, encounter}} label="Status">
+    <%= case encounter.status do %>
+      <% "queue" -> %>
+        <span class="badge badge-info">In Queue</span>
+      <% "in_visit" -> %>
+        <span class="badge badge-success">In Visit</span>
+      <% _ -> %>
+        <span class="badge badge-secondary">Unknown</span>
+    <% end %>
+  </:col>
 
   <:action :let={{_id, encounter}}>
     <div class="sr-only">

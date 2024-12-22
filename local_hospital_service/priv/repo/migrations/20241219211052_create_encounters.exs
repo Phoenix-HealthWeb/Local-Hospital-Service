@@ -7,6 +7,7 @@ defmodule LocalHospitalService.Repo.Migrations.CreateEncounters do
       add :reason, :string
       add :date_time, :naive_datetime
       add :patient, :string
+      add :status, :string, default: "queue"
       add :ward_id, references(:wards, on_delete: :nothing)
 
       timestamps(type: :utc_datetime)
