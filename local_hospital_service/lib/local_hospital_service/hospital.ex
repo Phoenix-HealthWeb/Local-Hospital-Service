@@ -115,6 +115,7 @@ alias LocalHospitalService.Hospital.Encounter
   """
   def list_encounters do
     Repo.all(Encounter)
+    |> Repo.preload(:ward)
   end
 
   @doc """
@@ -148,6 +149,7 @@ alias LocalHospitalService.Hospital.Encounter
   def create_encounter(attrs \\ %{}) do
     %Encounter{}
     |> Encounter.changeset(attrs)
+    |> Repo.preload(:ward)
     |> Repo.insert()
   end
 
@@ -167,6 +169,7 @@ alias LocalHospitalService.Hospital.Encounter
     encounter
     |> Encounter.changeset(attrs)
     |> Repo.update()
+
   end
 
   @doc """

@@ -40,13 +40,15 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
   @impl true
   def update(%{encounter: encounter, wards: wards} = assigns, socket) do
+    ward_options = Enum.map(wards, &{&1.name, &1.id})
+
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:wards, ward_options)
      |> assign_new(:form, fn ->
        to_form(Hospital.change_encounter(encounter))
-     end)
-     |> assign(:wards, wards)}
+     end)}
   end
 
   @impl true

@@ -4,9 +4,9 @@ defmodule LocalHospitalServiceWeb.EncounterLive.Index do
   alias LocalHospitalService.Hospital
   alias LocalHospitalService.Hospital.Encounter
 
-  @impl true
   def mount(_params, _session, socket) do
-    {:ok, stream(socket, :encounters, Hospital.list_encounters())}
+    wards = Repo.all(Ward) |> Enum.map(&{&1.name, &1.id})
+    {:ok, assign(socket, wards: wards)}
   end
 
   @impl true
