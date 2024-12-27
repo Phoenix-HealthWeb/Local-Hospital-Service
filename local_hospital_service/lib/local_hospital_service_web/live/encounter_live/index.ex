@@ -15,15 +15,19 @@ defmodule LocalHospitalServiceWeb.EncounterLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
+    wards = Hospital.list_wards()
     socket
     |> assign(:page_title, "Edit Encounter")
     |> assign(:encounter, Hospital.get_encounter!(id))
+    |> assign(:wards, wards)
   end
 
   defp apply_action(socket, :new, _params) do
+    wards = Hospital.list_wards()
     socket
     |> assign(:page_title, "New Encounter")
     |> assign(:encounter, %Encounter{})
+    |> assign(:wards, wards)
   end
 
   defp apply_action(socket, :index, _params) do

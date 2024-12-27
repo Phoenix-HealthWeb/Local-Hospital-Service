@@ -13,12 +13,10 @@
   row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
 >
   <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
-  <:col :let={{_id, encounter}} label="Ward"><%= encounter.ward.name %></:col>  <!-- Ward -->
+  <:col :let={{_id, encounter}} label="Ward"><%= encounter.ward.name %></:col>
   <:col :let={{_id, encounter}} label="Reason"><%= encounter.reason %></:col>
   <:col :let={{_id, encounter}} label="Date time"><%= encounter.date_time %></:col>
   <:col :let={{_id, encounter}} label="Patient"><%= encounter.patient %></:col>
-  
-  <!-- Added column for status -->
   <:col :let={{_id, encounter}} label="Status">
     <%= case encounter.status do %>
       <% "queue" -> %>
@@ -31,9 +29,6 @@
   </:col>
 
   <:action :let={{_id, encounter}}>
-    <div class="sr-only">
-      <.link navigate={~p"/encounters/#{encounter}"}>Show</.link>
-    </div>
     <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
   </:action>
 
@@ -54,6 +49,7 @@
     title={@page_title}
     action={@live_action}
     encounter={@encounter}
+    wards={@wards} <!-- Pass the wards -->
     patch={~p"/encounters"}
   />
 </.modal>
