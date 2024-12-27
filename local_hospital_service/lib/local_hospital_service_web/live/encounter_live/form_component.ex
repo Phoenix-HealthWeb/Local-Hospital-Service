@@ -25,10 +25,22 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
         <.input field={@form[:patient]} type="text" label="Patient" />
 
         <!-- Ward select -->
-        <.input field={@form[:ward_id]} type="select" options={@wards} prompt="Select a Ward" label="Ward" />
+        <.input
+          field={@form[:ward_id]}
+          type="select"
+          options={@wards}
+          prompt="Select a Ward"
+          label="Ward"
+        />
 
         <!-- Status select -->
-        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" />
+        <.input
+          field={@form[:status]}
+          type="select"
+          options={["queue", "in_visit"]}
+          prompt="Select Status"
+          label="Status"
+        />
 
         <:actions>
           <.button phx-disable-with="Saving...">Save Encounter</.button>
@@ -40,13 +52,16 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
   @impl true
   def update(%{encounter: encounter, wards: wards} = assigns, socket) do
+    # Trasforma i ward in una lista di tuple {label, value}
+    ward_options = Enum.map(wards, &{&1.name, &1.id})
+
     {:ok,
      socket
      |> assign(assigns)
+     |> assign(:wards, ward_options) # Passa la lista di ward trasformata
      |> assign_new(:form, fn ->
        to_form(Hospital.change_encounter(encounter))
-     end)
-     |> assign(:wards, wards)}
+     end)}
   end
 
   @impl true

@@ -5,8 +5,20 @@ defmodule LocalHospitalService.HospitalFixtures do
   """
 
   @doc """
-  Generate an encounter.
+  Generate a ward.
   """
+  def ward_fixture(attrs \\ %{}) do
+    # Attributes
+    {:ok, ward} =
+      attrs
+      |> Enum.into(%{
+        description: "some description",
+        name: "some name"
+      })
+      |> LocalHospitalService.Hospital.create_ward()
+
+    ward
+  end
   def encounter_fixture(attrs \\ %{}) do
     # Create encounter with right attributes
     {:ok, encounter} =
