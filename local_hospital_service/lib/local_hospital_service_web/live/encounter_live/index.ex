@@ -2,11 +2,19 @@ defmodule LocalHospitalServiceWeb.EncounterLive.Index do
   use LocalHospitalServiceWeb, :live_view
 
   alias LocalHospitalService.Hospital
-  alias LocalHospitalService.Hospital.Encounter
 
+  @impl true
   def mount(_params, _session, socket) do
-    wards = Repo.all(Ward) |> Enum.map(&{&1.name, &1.id})
-    {:ok, assign(socket, wards: wards)}
+    # Precaricamento degli encounter con le ward
+    encounters = Hospital.list_encounters()
+
+    # Conversione delle ward in una lista di opzioni per il form
+    wards = Hospital.list_wards() |> Enum.map(&{&1.name, &1.id})
+
+    {:ok,
+     socket
+     |> assign(:wards, wards)
+     |> stream(:encounters, encounters)}
   end
 
   @impl true
@@ -15,19 +23,19 @@ defmodule LocalHospitalServiceWeb.EncounterLive.Index do
   end
 
   defp apply_action(socket, :edit, %{"id" => id}) do
-    wards = Hospital.list_wards()
+    # Carica l'encounter con la ward precaricata
+    encounter = Hospital.get_encounter!(id)
+    IO.inspect(encounter.ward, label: "Loaded Ward in Edit Action")
+
     socket
     |> assign(:page_title, "Edit Encounter")
-    |> assign(:encounter, Hospital.get_encounter!(id))
-    |> assign(:wards, wards)
+    |> assign(:encounter, encounter)
   end
 
   defp apply_action(socket, :new, _params) do
-    wards = Hospital.list_wards()
     socket
     |> assign(:page_title, "New Encounter")
-    |> assign(:encounter, %Encounter{})
-    |> assign(:wards, wards)
+    |> assign(:encounter, %Hospital.Encounter{})
   end
 
   defp apply_action(socket, :index, _params) do
@@ -43,6 +51,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.Index do
 
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
+    # Elimina l'encounter e aggiorna il flusso
     encounter = Hospital.get_encounter!(id)
     {:ok, _} = Hospital.delete_encounter(encounter)
 

@@ -2,6 +2,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
   alias LocalHospitalService.Hospital
+  alias Phoenix.LiveView.JS
 
   @impl true
   def render(assigns) do
@@ -14,7 +15,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
       <.simple_form
         for={@form}
-        id="encounter-form"
+        id={"encounter-form-#{@encounter.id || "new"}"}
         phx-target={@myself}
         phx-change="validate"
         phx-submit="save"
@@ -40,56 +41,51 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
   @impl true
   def update(%{encounter: encounter, wards: wards} = assigns, socket) do
-    ward_options = Enum.map(wards, &{&1.name, &1.id})
+    IO.inspect(wards, label: "Wards received in form component")
+    IO.inspect(encounter, label: "Encounter received in form component")
+
+    changeset = Hospital.change_encounter(encounter)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(:wards, ward_options)
-     |> assign_new(:form, fn ->
-       to_form(Hospital.change_encounter(encounter))
-     end)}
+     |> assign(:form, to_form(changeset))}
   end
 
   @impl true
   def handle_event("validate", %{"encounter" => encounter_params}, socket) do
-    changeset = Hospital.change_encounter(socket.assigns.encounter, encounter_params)
-    {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
+    IO.inspect(encounter_params, label: "Encounter params during validation")
+
+    changeset =
+      socket.assigns.encounter
+      |> Hospital.change_encounter(encounter_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, :form, to_form(changeset))}
   end
 
+  @impl true
   def handle_event("save", %{"encounter" => encounter_params}, socket) do
-    save_encounter(socket, socket.assigns.action, encounter_params)
-  end
-
-  defp save_encounter(socket, :edit, encounter_params) do
-    case Hospital.update_encounter(socket.assigns.encounter, encounter_params) do
+    case save_encounter(socket.assigns.action, socket.assigns.encounter, encounter_params) do
       {:ok, encounter} ->
-        notify_parent({:saved, encounter})
+        send(self(), {:saved, encounter})
 
+        # Close the modal by navigating back to the index page
         {:noreply,
          socket
-         |> put_flash(:info, "Encounter updated successfully")
          |> push_patch(to: socket.assigns.patch)}
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
+      {:error, changeset} ->
+        IO.inspect(changeset.errors, label: "Changeset Errors")
+        {:noreply, assign(socket, :form, to_form(changeset))}
     end
   end
 
-  defp save_encounter(socket, :new, encounter_params) do
-    case Hospital.create_encounter(encounter_params) do
-      {:ok, encounter} ->
-        notify_parent({:saved, encounter})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Encounter created successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
-    end
+  defp save_encounter(:new, _encounter, encounter_params) do
+    Hospital.create_encounter(encounter_params)
   end
 
-  defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
+  defp save_encounter(:edit, encounter, encounter_params) do
+    Hospital.update_encounter(encounter, encounter_params)
+  end
 end

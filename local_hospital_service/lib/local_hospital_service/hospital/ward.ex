@@ -5,7 +5,6 @@ defmodule LocalHospitalService.Hospital.Ward do
   schema "wards" do
     field :name, :string
     field :description, :string
-
     timestamps(type: :utc_datetime)
   end
 

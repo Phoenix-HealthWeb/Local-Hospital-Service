@@ -2,20 +2,25 @@
   Encounter <%= @encounter.id %>
   <:subtitle>This is an encounter record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/encounters/#{@encounter}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit encounter</.button>
+    <.link patch={~p"/encounters/#{@encounter.id}/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit Encounter</.button>
     </.link>
   </:actions>
 </.header>
 
 <.list>
   <:item title="Priority"><%= @encounter.priority %></:item>
-  <:item title="Ward"><%= @encounter.ward.name %></:item>  <!-- Ward -->
+  <:item title="Ward">
+    <%= if @encounter.ward do %>
+      <%= @encounter.ward.name %>
+    <% else %>
+      Not assigned
+    <% end %>
+  </:item>
   <:item title="Reason"><%= @encounter.reason %></:item>
   <:item title="Date time"><%= @encounter.date_time %></:item>
   <:item title="Patient"><%= @encounter.patient %></:item>
   
-  <!-- Status -->
   <:item title="Status">
     <%= case @encounter.status do %>
       <% "queue" -> %>

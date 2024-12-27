@@ -11,7 +11,7 @@ defmodule LocalHospitalService.Hospital.Encounter do
     field :date_time, :naive_datetime
     field :patient, :string
     field :status, :string, default: "queue"  # Added patient status: queue or visit
-    belongs_to :ward, LocalHospitalService.Hospital.Ward
+    belongs_to :ward, LocalHospitalService.Hospital.Ward, foreign_key: :ward_id
 
     timestamps(type: :utc_datetime)
   end
