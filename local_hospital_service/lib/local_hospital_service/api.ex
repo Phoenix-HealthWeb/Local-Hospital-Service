@@ -21,7 +21,7 @@ defmodule LocalHospitalService.Api do
         {:error, %{status_code: status_code, body: body}}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
-        Logger.error("Request error: #{inspect(reason)}")
+        Logger.error("GET #{url} request error: #{inspect(reason)}")
         {:error, reason}
     end
   end
