@@ -19,8 +19,9 @@ defmodule LocalHospitalService.Hospital.Encounter do
   @doc false
   def changeset(encounter, attrs) do
     encounter
-    |> cast(attrs, [:priority, :reason, :date_time, :patient, :status])
-    |> validate_required([:priority, :reason, :date_time, :patient])
+    |> cast(attrs, [:priority, :reason, :date_time, :patient, :status, :ward_id])
+    |> validate_required([:priority, :reason, :date_time, :patient, :status, :ward_id])
+    |> assoc_constraint(:ward)
     |> validate_inclusion(:status, @statuses)
   end
 end

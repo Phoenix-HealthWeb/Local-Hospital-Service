@@ -40,6 +40,7 @@ defmodule LocalHospitalService.Hospital do
   def list_encounters do
     Repo.all(Encounter)
     |> Repo.preload(:ward)
+    |> tap(&IO.inspect(&1, label: "Encounters with Preloaded Ward"))
   end
 
   def get_encounter!(id) do

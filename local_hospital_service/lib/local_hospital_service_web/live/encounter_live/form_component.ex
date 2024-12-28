@@ -2,7 +2,6 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
   alias LocalHospitalService.Hospital
-  alias Phoenix.LiveView.JS
 
   @impl true
   def render(assigns) do
