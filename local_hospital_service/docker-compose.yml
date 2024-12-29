@@ -38,6 +38,8 @@ services:
             - PORT=${PHX_PORT}
             - FORCE_MIGRATIONS=true
             - NDB_URL=${NDB_URL}
+            # When using compose, rabbitm can't be accessed by localhost, so another variable is needed
+            - RABBITMQ_URL=${RABBITMQ_URL_COMPOSE}
         ports:
             - "${PHX_PORT}:${PHX_PORT}"
         depends_on:
@@ -46,6 +48,11 @@ services:
         restart: unless-stopped
 
 volumes:
-    sqlite-data: {}
+    sqlite-data:
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: ./volumes/sqlite-data
     rabbitmq-data: {}
     rabbitmq-log: {}
