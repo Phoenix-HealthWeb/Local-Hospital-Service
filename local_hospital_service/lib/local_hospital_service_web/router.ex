@@ -19,8 +19,24 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/", LocalHospitalServiceWeb do
     pipe_through :browser
+    live "/encounters", EncounterLive.Index, :index
+    live "/encounters/new", EncounterLive.Index, :new
+    live "/encounters/:id/edit", EncounterLive.Index, :edit
+
+    live "/encounters/:id", EncounterLive.Show, :show
+    live "/encounters/:id/show/edit", EncounterLive.Show, :edit
 
     get "/", PageController, :home
+  end
+
+  scope "/admin", LocalHospitalServiceWeb do
+    pipe_through :browser
+
+    live "/wards", WardLive.Index, :index
+    live "/wards/new", WardLive.Index, :new
+    live "/wards/:id/edit", WardLive.Index, :edit
+    live "/wards/:id", WardLive.Show, :show
+    live "/wards/:id/show/edit", WardLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.

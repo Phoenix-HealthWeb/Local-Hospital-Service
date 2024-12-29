@@ -16,3 +16,15 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+
+  # ENCOUNTERS
+
+  From localhost:4000/encounters it is possible to view and add an encounter
+  Fixed ward not being associated correctly and displayed in each generated encounter
+  Encounter at the moment includes ward for local testing purposes
+  Add and view wards from localhost:4000/admin/wards
+
+  # TODO
+
+  Check patient's ID before creating encounter. Proceed if ID is in NDB,
+  add patient to NDB if not present

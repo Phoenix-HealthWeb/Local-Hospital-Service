@@ -1,0 +1,33 @@
+<.header>
+  Ward Details
+  <:actions>
+    <.link patch={~p"/admin/wards/#{@ward.id}/edit"}>
+      <.button>Edit Ward</.button>
+    </.link>
+    <.link
+      phx-click={JS.push("delete", value: %{id: @ward.id}) |> hide("##{@ward.id}")} 
+      data-confirm="Are you sure?"
+    >
+      <.button>Delete</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.back navigate={~p"/admin/wards"}>Back to wards</.back>
+
+<.modal :if={@live_action == :edit} id="ward-modal" show on_cancel={JS.patch(~p"/admin/wards")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.WardLive.FormComponent}
+    id={@ward.id}
+    title={@page_title}
+    action={@live_action}
+    ward={@ward}
+    patch={~p"/admin/wards"}
+  />
+</.modal>
+
+<div>
+  <h3><%= @ward.name %></h3>
+  <p><strong>Description:</strong> <%= @ward.description %></p>
+  <p><strong>ID:</strong> <%= @ward.id %></p>
+</div>

@@ -1,4 +1,4 @@
-defmodule LocalHospitalServiceWeb.Gettext do
+                 defmodule LocalHospitalServiceWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 
@@ -20,5 +20,5 @@ defmodule LocalHospitalServiceWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :local_hospital_service
-end
+                 use Gettext, otp_app: :local_hospital_service
+                end
