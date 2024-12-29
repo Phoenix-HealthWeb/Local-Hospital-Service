@@ -1,80 +1,102 @@
-defmodule LocalHospitalService.Hospital do
-  @moduledoc """
-  The Hospital context.
-  """
+defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
+  use LocalHospitalServiceWeb, :live_component
 
-  import Ecto.Query, warn: false
-  alias LocalHospitalService.Repo
+  alias LocalHospitalService.Hospital
 
-  alias LocalHospitalService.Hospital.Ward
-  alias LocalHospitalService.Hospital.Encounter
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <div>
+      <.header>
+        <%= @title %>
+        <:subtitle>Use this form to manage encounter records in your database.</:subtitle>
+      </.header>
 
-  # Wards
-  def list_wards do
-    Repo.all(Ward)
+      <.simple_form
+        for={@form}
+        id={"encounter-form-#{@encounter.id || "new"}"}
+        phx-target={@myself}
+        phx-change="validate"
+        phx-submit="save"
+      >
+        <.input field={@form[:priority]} type="number" label="Priority" />
+        <.input field={@form[:reason]} type="text" label="Reason" />
+        <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
+        <.input field={@form[:patient]} type="text" label="Patient" />
+
+        <!-- Ward select -->
+        <.input field={@form[:ward_id]} type="select" options={@wards} prompt="Select a Ward" label="Ward" />
+
+        <!-- Status select -->
+        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" />
+
+        <:actions>
+          <.button phx-disable-with="Saving...">Save Encounter</.button>
+        </:actions>
+      </.simple_form>
+    </div>
+    """
   end
 
-  def get_ward!(id), do: Repo.get!(Ward, id)
+  @impl true
+  def update(%{encounter: encounter, wards: wards} = assigns, socket) do
+    IO.inspect(wards, label: "Wards received in form component")
+    IO.inspect(encounter, label: "Encounter received in form component")
 
-  def create_ward(attrs \\ %{}) do
-    %Ward{}
-    |> Ward.changeset(attrs)
-    |> Repo.insert()
+    changeset = Hospital.change_encounter(encounter)
+
+    {:ok,
+     socket
+     |> assign(assigns)
+     |> assign(:form, to_form(changeset))}
   end
 
-  def update_ward(%Ward{} = ward, attrs) do
-    ward
-    |> Ward.changeset(attrs)
-    |> Repo.update()
+  @impl true
+  def handle_event("validate", %{"encounter" => encounter_params}, socket) do
+    IO.inspect(encounter_params, label: "Encounter params during validation")
+
+    changeset =
+      socket.assigns.encounter
+      |> Hospital.change_encounter(encounter_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, :form, to_form(changeset))}
   end
 
-  def delete_ward(%Ward{} = ward) do
-    Repo.delete(ward)
-  end
+  @impl true
+  def handle_event("save", %{"encounter" => encounter_params}, socket) do
+    case save_encounter(socket.assigns.action, socket.assigns.encounter, encounter_params) do
+      {:ok, encounter} ->
+        send(self(), {:saved, encounter})
 
-  def change_ward(%Ward{} = ward, attrs \\ %{}) do
-    Ward.changeset(ward, attrs)
-  end
 
-  # Encounters
-  def list_encounters do
-    Repo.all(Encounter)
-    |> Repo.preload(:ward)
-    |> tap(&IO.inspect(&1, label: "Encounters with Preloaded Ward"))
-  end
+        {:noreply,
+         socket
+         |> put_flash(:info, "Encounter saved successfully")
+         |> push_patch(to: socket.assigns.patch)}
 
-  def get_encounter!(id) do
-    Repo.get!(Encounter, id)
-    |> Repo.preload(:ward)
-    |> tap(&IO.inspect(&1, label: "Encounter with Preloaded Ward"))
-  end
-
-  def create_encounter(attrs \\ %{}) do
-    %Encounter{}
-    |> Encounter.changeset(attrs)
-    |> Ecto.Changeset.cast_assoc(:ward, with: &Ward.changeset/2)
-    |> Repo.insert()
-    |> case do
-      {:ok, encounter} -> {:ok, Repo.preload(encounter, :ward)}
-      {:error, changeset} -> {:error, changeset}
+      {:error, changeset} ->
+        IO.inspect(changeset.errors, label: "Changeset Errors")
+        {:noreply, assign(socket, :form, to_form(changeset))}
     end
   end
 
-  def update_encounter(%Encounter{} = encounter, attrs) do
-    encounter
-    |> Encounter.changeset(attrs)
-    |> Repo.update()
-    |> case do
-      {:ok, encounter} -> {:ok, Repo.preload(encounter, :ward)}
-      {:error, changeset} -> {:error, changeset}
-    end
+  defp save_encounter(:new, _encounter, encounter_params) do
+
+    encounter_params
+    |> Map.put("ward", fetch_ward(encounter_params["ward_id"]))
+    |> Hospital.create_encounter()
   end
 
-  def delete_encounter(%Encounter{} = encounter) do
-    Repo.delete(encounter)
+  defp save_encounter(:edit, encounter, encounter_params) do
+
+    encounter_params
+    |> Map.put("ward", fetch_ward(encounter_params["ward_id"]))
+    |> Hospital.update_encounter(encounter)
   end
 
-  def change_encounter(%Encounter{} = encounter, attrs \\ %{}) do
-    Encounter.changeset(encounter, attrs)
+  defp fetch_ward(nil), do: nil
+  defp fetch_ward(ward_id) do
+    Hospital.get_ward!(ward_id)
   end
 end
