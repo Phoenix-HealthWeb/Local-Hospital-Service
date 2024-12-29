@@ -55,9 +55,14 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
   def handle_event("validate", %{"encounter" => encounter_params}, socket) do
     IO.inspect(encounter_params, label: "Encounter params during validation")
 
+    sanitized_params =
+      encounter_params
+      |> Enum.reject(fn {key, _value} -> String.starts_with?(key, "_unused_") end)
+      |> Enum.into(%{})
+
     changeset =
       socket.assigns.encounter
-      |> Hospital.change_encounter(encounter_params)
+      |> Hospital.change_encounter(sanitized_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :form, to_form(changeset))}
@@ -65,10 +70,14 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
   @impl true
   def handle_event("save", %{"encounter" => encounter_params}, socket) do
-    case save_encounter(socket.assigns.action, socket.assigns.encounter, encounter_params) do
+    sanitized_params =
+      encounter_params
+      |> Enum.reject(fn {key, _value} -> String.starts_with?(key, "_unused_") end)
+      |> Enum.into(%{})
+
+    case save_encounter(socket.assigns.action, socket.assigns.encounter, sanitized_params) do
       {:ok, encounter} ->
         send(self(), {:saved, encounter})
-
 
         {:noreply,
          socket
@@ -82,21 +91,10 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
   end
 
   defp save_encounter(:new, _encounter, encounter_params) do
-
-    encounter_params
-    |> Map.put("ward", fetch_ward(encounter_params["ward_id"]))
-    |> Hospital.create_encounter()
+    Hospital.create_encounter(encounter_params)
   end
 
   defp save_encounter(:edit, encounter, encounter_params) do
-
-    encounter_params
-    |> Map.put("ward", fetch_ward(encounter_params["ward_id"]))
-    |> Hospital.update_encounter(encounter)
-  end
-
-  defp fetch_ward(nil), do: nil
-  defp fetch_ward(ward_id) do
-    Hospital.get_ward!(ward_id)
+    Hospital.update_encounter(encounter, encounter_params)
   end
 end
