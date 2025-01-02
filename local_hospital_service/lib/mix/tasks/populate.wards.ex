@@ -20,7 +20,8 @@ defmodule Mix.Tasks.Populate.Wards do
         |> Enum.map(&String.split(&1, ","))
         |> Enum.map(&populate_ward/1)
         |> Enum.filter(&(&1 != nil))
-        |> (&Logger.info("Wards inserted: #{inspect(&1)}")).()
+        |> Enum.count()
+        |> (&Logger.info("Total wards inserted: #{&1}")).()
 
       {:error, reason} ->
         raise "Error reading file #{file_path}: #{reason}"
@@ -55,7 +56,7 @@ defmodule Mix.Tasks.Populate.Wards do
         end
 
       _ ->
-        Logger.info("Ward #{name} already exists")
+        # Logger.info("Ward #{name} already exists")
         nil
     end
   end
