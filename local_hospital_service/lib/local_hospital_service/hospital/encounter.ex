@@ -3,8 +3,8 @@ defmodule LocalHospitalService.Hospital.Encounter do
   import Ecto.Changeset
 
   # Fixed wrong field
-  @statuses ~w(queue in_visit)a
-
+  @statuses ["queue", "in_visit"]
+  #Fixed in_visit not being selected correctly
   schema "encounters" do
     field :priority, :integer
     field :reason, :string
