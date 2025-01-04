@@ -40,6 +40,9 @@ defmodule LocalHospitalServiceWeb.Router do
     pipe_through [:browser, :require_authenticated_doctor]
 
     get "/", PageController, :doctors
+
+    # TODO: Implement a page similar to te following
+    #live "/wards", WardLive.Index, :index
   end
 
   scope "/admin", LocalHospitalServiceWeb do
