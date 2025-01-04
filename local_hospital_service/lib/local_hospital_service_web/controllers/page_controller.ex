@@ -8,14 +8,14 @@ defmodule LocalHospitalServiceWeb.PageController do
   end
 
   def nurses(conn, _params) do
-    render(conn, :nurses, layout: false)
+    render(conn, :nurses, layout: {LocalHospitalServiceWeb.Layouts, :app})
   end
 
   def doctors(conn, _params) do
-    render(conn, :doctors, layout: false)
+    render(conn, :doctors, layout: {LocalHospitalServiceWe.Layouts, :app})
   end
 
   def admins(conn, _params) do
-    render(conn, :admins, layout: false)
+    render(conn, :admins, layout: {LocalHospitalServiceWeb.Layouts, :app})
   end
 end
