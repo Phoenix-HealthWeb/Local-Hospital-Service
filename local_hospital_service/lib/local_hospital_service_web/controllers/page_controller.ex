@@ -12,7 +12,7 @@ defmodule LocalHospitalServiceWeb.PageController do
   end
 
   def doctors(conn, _params) do
-    render(conn, :doctors, layout: {LocalHospitalServiceWe.Layouts, :app})
+    render(conn, :doctors, layout: {LocalHospitalServiceWeb.Layouts, :app})
   end
 
   def admins(conn, _params) do
