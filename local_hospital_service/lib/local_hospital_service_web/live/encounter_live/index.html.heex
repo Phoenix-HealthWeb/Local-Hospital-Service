@@ -1,0 +1,59 @@
+<.header>
+  Listing Encounters
+  <:actions>
+    <.link patch={~p"/encounters/new"}>
+      <.button>New Encounter</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="encounters"
+  rows={@streams.encounters}
+  row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
+>
+  <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
+  <:col :let={{_id, encounter}} label="Ward">
+    <%= if encounter.ward do %>
+      <%= encounter.ward.name %>
+    <% else %>
+      Not assigned
+    <% end %>
+  </:col>
+  <:col :let={{_id, encounter}} label="Reason"><%= encounter.reason %></:col>
+  <:col :let={{_id, encounter}} label="Date time"><%= encounter.date_time %></:col>
+  <:col :let={{_id, encounter}} label="Patient"><%= encounter.patient %></:col>
+  <:col :let={{_id, encounter}} label="Status">
+    <%= case encounter.status do %>
+      <% "queue" -> %>
+        <span class="badge badge-info">In Queue</span>
+      <% "in_visit" -> %>
+        <span class="badge badge-success">In Visit</span>
+      <% _ -> %>
+        <span class="badge badge-secondary">Unknown</span>
+    <% end %>
+  </:col>
+  <:action :let={{_id, encounter}}>
+    <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, encounter}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="encounter-modal" show on_cancel={JS.patch(~p"/encounters")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.EncounterLive.FormComponent}
+    id={@encounter.id || :new}
+    title={@page_title}
+    action={@live_action}
+    encounter={@encounter}
+    wards={@wards}
+    patch={~p"/encounters"}
+  />
+</.modal>

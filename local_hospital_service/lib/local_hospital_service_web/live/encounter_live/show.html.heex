@@ -1,0 +1,47 @@
+<.header>
+  Encounter <%= @encounter.id %>
+  <:subtitle>This is an encounter record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/encounters/#{@encounter.id}/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit Encounter</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Priority"><%= @encounter.priority %></:item>
+  <:item title="Ward">
+    <%= if @encounter.ward do %>
+      <%= @encounter.ward.name %>
+    <% else %>
+      Not assigned
+    <% end %>
+  </:item>
+  <:item title="Reason"><%= @encounter.reason %></:item>
+  <:item title="Date time"><%= @encounter.date_time %></:item>
+  <:item title="Patient"><%= @encounter.patient %></:item>
+  
+  <:item title="Status">
+    <%= case @encounter.status do %>
+      <% "queue" -> %>
+        <span class="badge badge-info">In Queue</span>
+      <% "in_visit" -> %>
+        <span class="badge badge-success">In Visit</span>
+      <% _ -> %>
+        <span class="badge badge-secondary">Unknown</span>
+    <% end %>
+  </:item>
+</.list>
+
+<.back navigate={~p"/encounters"}>Back to encounters</.back>
+
+<.modal :if={@live_action == :edit} id="encounter-modal" show on_cancel={JS.patch(~p"/encounters/#{@encounter}")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.EncounterLive.FormComponent}
+    id={@encounter.id}
+    title={@page_title}
+    action={@live_action}
+    encounter={@encounter}
+    patch={~p"/encounters/#{@encounter}"}
+  />
+</.modal>

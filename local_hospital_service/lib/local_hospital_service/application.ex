@@ -23,7 +23,12 @@ defmodule LocalHospitalService.Application do
       # Start to serve requests, typically the last entry
       LocalHospitalServiceWeb.Endpoint,
       # Start the NDB Syncronization supervisor
-      LocalHospitalService.NdbSyncronization.Supervisor
+      LocalHospitalService.NdbSyncronization.Supervisor,
+      # Populate the wards table with initial data
+      {Task,
+       fn ->
+         Mix.Tasks.Populate.Wards.run([Path.expand("../../priv/data/initial_wards.csv", __DIR__)])
+       end}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

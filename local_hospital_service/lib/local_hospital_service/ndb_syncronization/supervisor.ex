@@ -5,42 +5,39 @@ defmodule LocalHospitalService.NdbSyncronization.Supervisor do
   """
   use Supervisor
 
-  @queue_name Application.compile_env!(
-                :local_hospital_service,
-                LocalHospitalService.NdbSyncronization
-              )[:queue_name]
-
   def start_link(_) do
     Supervisor.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   @impl true
   def init(_init_args) do
-    rabbit_host =
-      Application.get_env(:local_hospital_service, LocalHospitalService.NdbSyncronization)[
-        :rabbit_host
-      ]
+    [queue_name: queue_name, rabbit_url: rabbit_url] =
+      Application.get_env(:local_hospital_service, LocalHospitalService.NdbSyncronization)
 
     {:ok, connection} =
-      AMQP.Connection.open(host: rabbit_host)
+      AMQP.Connection.open(rabbit_url)
+      |> case do
+        {:ok, conn} -> {:ok, conn}
+        {:error, reason} -> raise "Failed to connect to RabbitMQ: #{inspect(reason)}"
+      end
 
     {:ok, channel} = AMQP.Channel.open(connection)
 
     {:ok, queue} =
-      AMQP.Queue.declare(channel, @queue_name,
+      AMQP.Queue.declare(channel, queue_name,
         durable: true,
         arguments: [
-          {"x-dead-letter-exchange", :longstr, "#{@queue_name}_deadletter_exchange"},
+          {"x-dead-letter-exchange", :longstr, "#{queue_name}_deadletter_exchange"},
           {"x-dead-letter-routing-key", :longstr, ""}
         ]
       )
 
     # Additionally, declare a deadletter queue
-    {:ok, deadletter} = AMQP.Queue.declare(channel, "#{@queue_name}_deadletter", durable: true)
-    :ok = AMQP.Exchange.declare(channel, "#{@queue_name}_deadletter_exchange", :direct)
+    {:ok, deadletter} = AMQP.Queue.declare(channel, "#{queue_name}_deadletter", durable: true)
+    :ok = AMQP.Exchange.declare(channel, "#{queue_name}_deadletter_exchange", :direct)
 
     :ok =
-      AMQP.Queue.bind(channel, deadletter.queue, "#{@queue_name}_deadletter_exchange",
+      AMQP.Queue.bind(channel, deadletter.queue, "#{queue_name}_deadletter_exchange",
         routing_key: ""
       )
 
