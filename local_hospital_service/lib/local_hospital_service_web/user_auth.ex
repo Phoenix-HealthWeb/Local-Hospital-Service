@@ -4,6 +4,7 @@ defmodule LocalHospitalServiceWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
 
+  require Logger
   alias LocalHospitalService.Accounts
 
   # Make the remember me cookie valid for 60 days.
@@ -195,21 +196,33 @@ defmodule LocalHospitalServiceWeb.UserAuth do
     end
   end
 
-  @doc """
-  Used for routes that require the user to be authenticated.
+  def require_authenticated_doctor(conn, _opts) do
+    require_authenticated_user(conn, %{role: "Doctor"})
+  end
 
-  If you want to enforce the user email is confirmed before
-  they use the application at all, here would be a good place.
-  """
-  def require_authenticated_user(conn, _opts) do
-    if conn.assigns[:current_user] do
-      conn
-    else
-      conn
-      |> put_flash(:error, "You must log in to access this page.")
-      |> maybe_store_return_to()
-      |> redirect(to: ~p"/users/log_in")
-      |> halt()
+  def require_authenticated_nurse(conn, _opts) do
+    require_authenticated_user(conn, %{role: "Nurse"})
+  end
+
+  def require_authenticated_admin(conn, _opts) do
+    require_authenticated_user(conn, %{role: "Technician"})
+  end
+
+  defp require_authenticated_user(conn, %{role: role}) do
+    case conn.assigns[:current_user] do
+      nil ->
+        conn
+        |> put_flash(:error, "You must log in to access this page.")
+        |> maybe_store_return_to()
+        |> redirect(to: ~p"/users/log_in")
+        |> halt()
+
+      %LocalHospitalService.Accounts.User{role: ^role} ->
+        conn
+
+      %LocalHospitalService.Accounts.User{role: _} ->
+        # Wrong role, redirect to the correct landing page
+        redirect_on_user_role(conn, nil)
     end
   end
 
@@ -226,4 +239,28 @@ defmodule LocalHospitalServiceWeb.UserAuth do
   defp maybe_store_return_to(conn), do: conn
 
   defp signed_in_path(_conn), do: ~p"/"
+
+  def redirect_on_user_role(conn, _opts) do
+    case conn.assigns[:current_user] do
+      nil ->
+        conn
+        |> redirect(to: ~p"/users/log_in")
+        |> halt()
+
+      %LocalHospitalService.Accounts.User{role: "Doctor"} ->
+        conn
+        |> redirect(to: ~p"/doctors")
+        |> halt()
+
+      %LocalHospitalService.Accounts.User{role: "Nurse"} ->
+        conn
+        |> redirect(to: ~p"/nurses")
+        |> halt()
+
+      %LocalHospitalService.Accounts.User{role: "Technician"} ->
+        conn
+        |> redirect(to: ~p"/admin")
+        |> halt()
+    end
+  end
 end

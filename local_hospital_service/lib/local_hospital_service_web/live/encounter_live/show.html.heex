@@ -2,7 +2,7 @@
   Encounter <%= @encounter.id %>
   <:subtitle>This is an encounter record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/encounters/#{@encounter.id}/edit"} phx-click={JS.push_focus()}>
+    <.link patch={~p"/nurses/encounters/#{@encounter.id}/edit"} phx-click={JS.push_focus()}>
       <.button>Edit Encounter</.button>
     </.link>
   </:actions>
@@ -33,15 +33,15 @@
   </:item>
 </.list>
 
-<.back navigate={~p"/encounters"}>Back to encounters</.back>
+<.back navigate={~p"/nurses/encounters"}>Back to encounters</.back>
 
-<.modal :if={@live_action == :edit} id="encounter-modal" show on_cancel={JS.patch(~p"/encounters/#{@encounter}")}>
+<.modal :if={@live_action == :edit} id="encounter-modal" show on_cancel={JS.patch(~p"/nurses/encounters/#{@encounter}")}>
   <.live_component
     module={LocalHospitalServiceWeb.EncounterLive.FormComponent}
     id={@encounter.id}
     title={@page_title}
     action={@live_action}
     encounter={@encounter}
-    patch={~p"/encounters/#{@encounter}"}
+    patch={~p"/nurses/encounters/#{@encounter}"}
   />
 </.modal>
