@@ -1,5 +1,5 @@
 <.header>
-  Patients in the Hospital
+  <strong>Patients in the Hospital</strong>
   <:actions>
     <.link href={~p"/patients/new"}>
       
@@ -7,20 +7,28 @@
   </:actions>
 </.header>
 
+
 <.table id="patients" rows={@patients} row_click={&JS.navigate(~p"/patients/#{&1}")}>
-  <:col :let={patient} label="Name">{patient.name}</:col>
-  <:col :let={patient} label="Colorcode">{patient.colorcode}</:col>
-  <:col :let={patient} label="Symptom">{patient.symptom}</:col>
-  <:col :let={patient} label="Ward">{patient.ward}</:col>
-  <:action :let={patient}>
-    <div class="sr-only">
-      <.link navigate={~p"/patients/#{patient}"}>Show</.link>
-    </div>
-    
-  </:action>
-  <:action :let={patient}>
-    <.link href={~p"/patients/#{patient}"} method="delete" data-confirm="Are you sure?">
-      Delete
-    </.link>
-  </:action>
+  <:col :let={patient} label="ID">PK</:col>
+  <:col :let={patient} label="Priority"><%= patient.colorcode %></:col>
+  <:col :let={patient} label="Ward"><%= patient.ward %></:col>
+  <:col :let={patient} label="Symptom"><%= patient.symptom %></:col>
+  <:col :let={patient} label="DateTime">10:00</:col>
+  <:col :let={patient} label="Patient"><%= patient.name %></:col>
 </.table>
+
+<br>
+<p>
+  <ul> 
+    
+      <%= for ward <- @list do %>
+        <li><strong>Ward: </strong><%= ward %> </li>
+      <% end %>
+
+      <%= for ward <- @occurrences do %>
+        <li><strong>Numero Pazienti: </strong><%= ward %> </li>
+      <% end %>
+
+      
+  </ul>
+</p>

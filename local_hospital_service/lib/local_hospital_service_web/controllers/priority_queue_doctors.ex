@@ -1,4 +1,4 @@
-defmodule NursesWeb.PriorityQueueDoctor do
+defmodule LocalHospitalServiceWeb.PriorityQueueDoctor do
 
   def new() do
     doctors = DoctorParser.parse_file("dottori.txt")
@@ -10,8 +10,7 @@ defmodule NursesWeb.PriorityQueueDoctor do
   def enqueue(doctors) do
     doctors = DoctorSorter.enqueue(doctors)
   end
-
-  # ... altri metodi come dequeue, peek, ecc.
+  #da fare altri metodi come dequeue per togliere il paziente preso in carico nella visita dalla priority queue
 end
 
 defmodule Doctor do

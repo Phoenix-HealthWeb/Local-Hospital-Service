@@ -1,5 +1,5 @@
-defmodule NursesWeb.DoctorHTML do
-  use NursesWeb, :html
+defmodule LocalHospitalServiceWeb.DoctorHTML do
+  use LocalHospitalServiceWeb, :html
 
   embed_templates "doctor_html/*"
   embed_templates "patient_html/*"

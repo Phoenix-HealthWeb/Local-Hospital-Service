@@ -1,16 +1,45 @@
-defmodule NursesWeb.PriorityQueue do
+defmodule LocalHospitalServiceWeb.PriorityQueue do
 
   def new(ward) do
     patients = PatientParser.parse_file("pazienti.txt")
     patients |> PatientSorter.enqueue(ward)
-
   end
 
   def new() do
     patients = PatientParser.parse_file("pazienti.txt")
     patients |> PatientSorter.enqueue()
-
   end
+
+  def wards_list(quack) do
+    # Usa un accumulatore per raccogliere i ward unici
+    Enum.reduce(quack, [], fn patient, wards_list ->
+      # Verifica se il ward non è già presente nella lista
+      if patient.ward not in wards_list do
+        [patient.ward | wards_list]  # Aggiungi il ward alla lista
+      else
+        wards_list  # Non aggiungere il ward se è già presente
+      end
+    end)
+    |> Enum.reverse()  # Inverte la lista per mantenere l'ordine di apparizione originale
+  end
+
+  def wards_counter(quack) do
+    # Estrae le ward dalla lista dei pazienti, rimuove eventuali spazi finali, e rimuove i duplicati
+    wards = quack
+            |> Enum.map(fn patient -> String.trim_trailing(patient.ward) end)  # Rimuove gli spazi finali
+            |> Enum.uniq()  # Rimuove i duplicati
+
+    # Conta le occorrenze di ogni ward nella lista dei pazienti
+    Enum.map(wards, fn ward ->
+      quack
+      |> Enum.count(fn patient -> String.trim_trailing(patient.ward) == ward end)  # Confronta senza spazi finali
+    end)
+  end
+
+
+
+
+
 
 
   # ... altri metodi come dequeue, peek, ecc.
@@ -27,10 +56,22 @@ defmodule PatientParser do
     |> Enum.map(&parse_patient/1)
   end
 
-  defp parse_patient(line) do
-    [name, colorcode, symptom, ward] = String.split(line, ", ", trim: true)
-    %Patient{name: name, colorcode: colorcode, symptom: symptom, ward: ward}
+  def parse_patient(line) do
+    # Dividi i campi con un separatore più permissivo
+    case String.split(line, ~r/\s*,\s*/) do
+      [name, colorcode, symptom, ward] ->
+        %Patient{
+          name: String.trim(name),
+          colorcode: String.trim(colorcode),
+          symptom: String.trim(symptom),
+          ward: String.trim(ward)
+        }
+
+      _ ->
+        raise ArgumentError, "Invalid line format: #{line}"
+    end
   end
+
 end
 
 defmodule PatientSorter do

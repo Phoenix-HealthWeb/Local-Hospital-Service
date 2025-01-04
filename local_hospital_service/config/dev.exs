@@ -2,11 +2,11 @@ import Config
 
 # Configure your database
 config :local_hospital_service, LocalHospitalService.Repo,
-  username: "postgres",
-  password: "Granchio99",
-  hostname: "localhost",
-  database: "local_hospital_service_dev",
-  pool_size: 10,
+username: "postgres",
+password: "Granchio99",
+hostname: "localhost",
+database: "local_hospital_service_dev",
+  pool_size: 5,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true
 

@@ -1,35 +1,40 @@
-defmodule NursesWeb.PatientController do
-  use NursesWeb, :controller
+defmodule LocalHospitalServiceWeb.PatientController do
+  use LocalHospitalServiceWeb, :controller
 
-  alias Nurses.Patients
-  alias Nurses.Patients.Patient
+
+
+
+
+
 
   def home(conn, _params) do
-    pq = NursesWeb.PriorityQueue.new()
+    pq = LocalHospitalServiceWeb.PriorityQueue.new()
     render(conn, :home, patients: pq)
   end
 
-#per la route /wards
-#"General" dovrebbe essere preso da il dottore attuale
+  #per la ruote /doctors
   def index(conn, _params) do
-    pq1 = NursesWeb.PriorityQueue.new()
+    pq1 = LocalHospitalServiceWeb.PriorityQueue.new()
+    as = LocalHospitalServiceWeb.PriorityQueue.wards_list(pq1)
+    as = Enum.map(as, fn ward -> String.trim_trailing(ward) end)
+    as = Enum.uniq(as)  # Rimuove i duplicati
 
-    render(conn, :index, patients: pq1)
+    # Ottieni i valori corrispondenti alle chiavi nella mappa
+    ward_counts = LocalHospitalServiceWeb.PriorityQueue.wards_counter(pq1)
+    # Passa la lista di conteggi e le chiavi alla view
+    render(conn, :index, patients: pq1, wards_list: as, list: ward_counts)
   end
 
   #per la route /ward/:id
-  #"General" dovrebbe essere preso da il dottore attuale
-  #in questo caso con Enum.at sta prendendo il campo ward del primo elemento di una lista
-  #di dottori, non di quello corrente
-  def indexxxx(conn, %{"id" => id}) do
-    pq = NursesWeb.PriorityQueueDoctor.new()
+  def indexxxx(conn, %{"wardId" => ward_id}) do
+    pq1 = LocalHospitalServiceWeb.PriorityQueue.new(ward_id)
+    as = LocalHospitalServiceWeb.PriorityQueue.wards_list(pq1)
+    as = Enum.map(as, fn ward -> String.trim_trailing(ward) end)
+    ward_counts = LocalHospitalServiceWeb.PriorityQueue.wards_counter(pq1)
 
-    first_ward = Enum.at(pq, 0).ward
-    pq1 = NursesWeb.PriorityQueue.new(id)
-    #pq1 = NursesWeb.PriorityQueue.new()
-
-    render(conn, :indexxxx, patients: pq1)
+    render(conn, :indexxxx, patients: pq1, list: as, occurrences: ward_counts)
   end
+
 
 
   def new(conn, _params) do
@@ -82,14 +87,29 @@ defmodule NursesWeb.PatientController do
     |> put_flash(:info, "Patient deleted successfully.")
     |> redirect(to: ~p"/patients")
   end
-end
 
-defmodule Patient do
-  defstruct [:name, :colorcode, :symptom, :ward]
-end
+  #QUERY PROVA COLLEGAMENTO DATABASE---------------------------------------------------------------------
+  @spec get_by_ward(Plug.Conn.t(), map()) :: Plug.Conn.t()
+  def get_by_ward(conn, %{"ward" => ward}) do
+    # URL dell'API
+    url = "http://localhost:4000/api/patients?ward=#{ward}"
+
+    # Esegui la richiesta GET usando Finch
+    case Finch.build(:get, url) |> Finch.request(LocalHospitalServiceWeb.Finch) do
+      {:ok, response} ->
+        # Se la risposta è positiva, restituisci i dati in JSON
+        json(conn, %{message: "Pazienti trovati", data: Jason.decode!(response.body)})
+
+      {:error, reason} ->
+        # Se c'è un errore, restituisci un messaggio di errore
+        json(conn, %{message: "Errore nella chiamata API", error: reason})
+    end
+  end
+#----------------------------------------------------------------------------------------------------
 
 defimpl Phoenix.Param, for: Patient do
   def to_param(patient) do
     "#{patient.name}-#{patient.colorcode}-#{patient.symptom}-#{patient.ward}"
   end
+end
 end
