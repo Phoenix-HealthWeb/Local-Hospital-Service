@@ -18,20 +18,37 @@ defmodule LocalHospitalServiceWeb.Router do
   end
 
   scope "/", LocalHospitalServiceWeb do
-    pipe_through :browser
+    pipe_through [:browser, :redirect_on_user_role]
+
+    # This page is actually never used. We rely on redirect_on_user_role to redirect to the correct landing page
+    get "/", PageController, :home
+  end
+
+  scope "/nurses", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_nurse]
+
+    # TODO: This page should be substituted with the corresponding landing page for the nurse
+    get "/", PageController, :home
     live "/encounters", EncounterLive.Index, :index
     live "/encounters/new", EncounterLive.Index, :new
     live "/encounters/:id/edit", EncounterLive.Index, :edit
 
     live "/encounters/:id", EncounterLive.Show, :show
     live "/encounters/:id/show/edit", EncounterLive.Show, :edit
+  end
 
+  scope "/doctors", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_doctor]
+
+    # TODO: This page should be substituted with the corresponding landing page for the doctor
     get "/", PageController, :home
   end
 
   scope "/admin", LocalHospitalServiceWeb do
-    pipe_through :browser
+    pipe_through [:browser, :require_authenticated_admin]
 
+    # TODO: This page should be substituted with the corresponding landing page for the admin
+    get "/", PageController, :home
     live "/wards", WardLive.Index, :index
     live "/wards/new", WardLive.Index, :new
     live "/wards/:id/edit", WardLive.Index, :edit
