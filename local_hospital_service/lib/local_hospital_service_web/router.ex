@@ -27,8 +27,7 @@ defmodule LocalHospitalServiceWeb.Router do
   scope "/nurses", LocalHospitalServiceWeb do
     pipe_through [:browser, :require_authenticated_nurse]
 
-    # TODO: This page should be substituted with the corresponding landing page for the nurse
-    get "/", PageController, :home
+    get "/", PageController, :nurses
     live "/encounters", EncounterLive.Index, :index
     live "/encounters/new", EncounterLive.Index, :new
     live "/encounters/:id/edit", EncounterLive.Index, :edit
@@ -40,15 +39,13 @@ defmodule LocalHospitalServiceWeb.Router do
   scope "/doctors", LocalHospitalServiceWeb do
     pipe_through [:browser, :require_authenticated_doctor]
 
-    # TODO: This page should be substituted with the corresponding landing page for the doctor
-    get "/", PageController, :home
+    get "/", PageController, :doctors
   end
 
   scope "/admin", LocalHospitalServiceWeb do
     pipe_through [:browser, :require_authenticated_admin]
 
-    # TODO: This page should be substituted with the corresponding landing page for the admin
-    get "/", PageController, :home
+    get "/", PageController, :admins
     live "/wards", WardLive.Index, :index
     live "/wards/new", WardLive.Index, :new
     live "/wards/:id/edit", WardLive.Index, :edit

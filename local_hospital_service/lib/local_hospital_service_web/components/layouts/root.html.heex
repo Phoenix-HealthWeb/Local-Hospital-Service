@@ -18,6 +18,7 @@
         <%= if @current_user do %>
           <li class="text-[0.8125rem] leading-6 text-zinc-900">
             <%= @current_user.email %>
+            <span class="font-semibold">(<%= @current_user.role %>)</span>
           </li>
           
           <li>
