@@ -77,7 +77,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
     case save_encounter(socket.assigns.action, socket.assigns.encounter, sanitized_params) do
       {:ok, encounter} ->
-        send(self(), {:saved, encounter})
+        send(self(), {__MODULE__, {:saved, encounter}})
 
         {:noreply,
          socket
