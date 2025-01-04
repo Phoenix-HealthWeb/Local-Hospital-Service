@@ -28,7 +28,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
         <.input field={@form[:ward_id]} type="select" options={@wards} prompt="Select a Ward" label="Ward" />
 
         <!-- Status select -->
-        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" />
+        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" value="queue" disabled/>
 
         <:actions>
           <.button phx-disable-with="Saving...">Save Encounter</.button>
