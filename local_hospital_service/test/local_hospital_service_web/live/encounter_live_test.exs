@@ -17,19 +17,19 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
     setup [:create_encounter]
 
     test "lists all encounters", %{conn: conn, encounter: encounter} do
-      {:ok, _index_live, html} = live(conn, ~p"/encounters")
+      {:ok, _index_live, html} = live(conn, ~p"/nurses/encounters")
 
       assert html =~ "Listing Encounters"
       assert html =~ encounter.reason
     end
 
     test "saves new encounter", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/encounters")
+      {:ok, index_live, _html} = live(conn, ~p"/nurses/encounters")
 
       assert index_live |> element("a", "New Encounter") |> render_click() =~
                "New Encounter"
 
-      assert_patch(index_live, ~p"/encounters/new")
+      assert_patch(index_live, ~p"/nurses/encounters/new")
 
       assert index_live
              |> form("#encounter-form", encounter: @invalid_attrs)
@@ -39,7 +39,7 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
              |> form("#encounter-form", encounter: @create_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/encounters")
+      assert_patch(index_live, ~p"/nurses/encounters")
 
       html = render(index_live)
       assert html =~ "Encounter created successfully"
@@ -47,12 +47,12 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
     end
 
     test "updates encounter in listing", %{conn: conn, encounter: encounter} do
-      {:ok, index_live, _html} = live(conn, ~p"/encounters")
+      {:ok, index_live, _html} = live(conn, ~p"/nurses/encounters")
 
       assert index_live |> element("#encounters-#{encounter.id} a", "Edit") |> render_click() =~
                "Edit Encounter"
 
-      assert_patch(index_live, ~p"/encounters/#{encounter}/edit")
+      assert_patch(index_live, ~p"/nurses/encounters/#{encounter}/edit")
 
       assert index_live
              |> form("#encounter-form", encounter: @invalid_attrs)
@@ -62,7 +62,7 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
              |> form("#encounter-form", encounter: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/encounters")
+      assert_patch(index_live, ~p"/nurses/encounters")
 
       html = render(index_live)
       assert html =~ "Encounter updated successfully"
@@ -70,7 +70,7 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
     end
 
     test "deletes encounter in listing", %{conn: conn, encounter: encounter} do
-      {:ok, index_live, _html} = live(conn, ~p"/encounters")
+      {:ok, index_live, _html} = live(conn, ~p"/nurses/encounters")
 
       assert index_live |> element("#encounters-#{encounter.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#encounters-#{encounter.id}")
@@ -81,19 +81,19 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
     setup [:create_encounter]
 
     test "displays encounter", %{conn: conn, encounter: encounter} do
-      {:ok, _show_live, html} = live(conn, ~p"/encounters/#{encounter}")
+      {:ok, _show_live, html} = live(conn, ~p"/nurses/encounters/#{encounter}")
 
       assert html =~ "Show Encounter"
       assert html =~ encounter.reason
     end
 
     test "updates encounter within modal", %{conn: conn, encounter: encounter} do
-      {:ok, show_live, _html} = live(conn, ~p"/encounters/#{encounter}")
+      {:ok, show_live, _html} = live(conn, ~p"/nurses/encounters/#{encounter}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Encounter"
 
-      assert_patch(show_live, ~p"/encounters/#{encounter}/show/edit")
+      assert_patch(show_live, ~p"/nurses/encounters/#{encounter}/show/edit")
 
       assert show_live
              |> form("#encounter-form", encounter: @invalid_attrs)
@@ -103,7 +103,7 @@ defmodule LocalHospitalServiceWeb.EncounterLiveTest do
              |> form("#encounter-form", encounter: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/encounters/#{encounter}")
+      assert_patch(show_live, ~p"/nurses/encounters/#{encounter}")
 
       html = render(show_live)
       assert html =~ "Encounter updated successfully"
