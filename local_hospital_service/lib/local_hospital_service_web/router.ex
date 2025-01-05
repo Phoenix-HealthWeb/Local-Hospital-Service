@@ -19,12 +19,12 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/", LocalHospitalServiceWeb do
     pipe_through :browser
-    live "/encounters", EncounterLive.Index, :index
-    live "/encounters/new", EncounterLive.Index, :new
-    live "/encounters/:id/edit", EncounterLive.Index, :edit
+    live "nurses/encounters", EncounterLive.Index, :index
+    live "nurses/encounters/new", EncounterLive.Index, :new
+    live "nurses/encounters/:id/edit", EncounterLive.Index, :edit
 
-    live "/encounters/:id", EncounterLive.Show, :show
-    live "/encounters/:id/show/edit", EncounterLive.Show, :edit
+    live "nurses/encounters/:id", EncounterLive.Show, :show
+    live "nurses/encounters/:id/show/edit", EncounterLive.Show, :edit
 
     get "/", PageController, :home
   end
