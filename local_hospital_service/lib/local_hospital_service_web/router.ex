@@ -19,6 +19,7 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/", LocalHospitalServiceWeb do
     pipe_through :browser
+    live "nurses/cf_verification", CfVerificationLive, :verify
     live "nurses/encounters", EncounterLive.Index, :index
     live "nurses/encounters/new", EncounterLive.Index, :new
     live "nurses/encounters/:id/edit", EncounterLive.Index, :edit
@@ -27,6 +28,7 @@ defmodule LocalHospitalServiceWeb.Router do
     live "nurses/encounters/:id/show/edit", EncounterLive.Show, :edit
 
     get "/", PageController, :home
+    get "/patients/new", PatientController, :new
   end
 
   scope "/admin", LocalHospitalServiceWeb do
