@@ -1,12 +1,6 @@
 defmodule LocalHospitalServiceWeb.PatientController do
   use LocalHospitalServiceWeb, :controller
 
-
-
-
-
-
-
   def home(conn, _params) do
     pq = LocalHospitalServiceWeb.PriorityQueue.new()
     render(conn, :home, patients: pq)
