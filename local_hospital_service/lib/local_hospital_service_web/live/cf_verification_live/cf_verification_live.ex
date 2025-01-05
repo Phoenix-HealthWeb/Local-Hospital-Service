@@ -44,7 +44,7 @@ defmodule LocalHospitalServiceWeb.CfVerificationLive do
   # EVENTO: create_patient
   def handle_event("create_patient", _params, socket) do
     cf = socket.assigns.cf_input
-    {:noreply, push_redirect(socket, to: ~p"/api/patients/new?prefill_cf=#{cf}")}
+    {:noreply, push_redirect(socket, to: ~p"/admin/wards")}
   end
 
   # EVENTO: cancel
