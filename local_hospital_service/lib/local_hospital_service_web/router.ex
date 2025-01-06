@@ -31,6 +31,7 @@ defmodule LocalHospitalServiceWeb.Router do
 
     live_session :nurses,
       on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      live "nurses/cf_verification", CfVerificationLive, :verify
       live "/encounters", EncounterLive.Index, :index
       live "/encounters/new", EncounterLive.Index, :new
       live "/encounters/:id/edit", EncounterLive.Index, :edit
