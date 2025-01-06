@@ -1,0 +1,45 @@
+<.header>
+  Listing Patients
+  <:actions>
+    <.link patch={~p"/patients/new"}>
+      <.button>New Patient</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="patients"
+  rows={@streams.patients}
+  row_click={fn {_id, patient} -> JS.navigate(~p"/patients/#{patient}") end}
+>
+  <:col :let={{_id, patient}} label="Cf"><%= patient.cf %></:col>
+  <:col :let={{_id, patient}} label="Firstname"><%= patient.firstname %></:col>
+  <:col :let={{_id, patient}} label="Lastname"><%= patient.lastname %></:col>
+  <:col :let={{_id, patient}} label="Date of birth"><%= patient.date_of_birth %></:col>
+  <:col :let={{_id, patient}} label="Gender"><%= patient.gender %></:col>
+  <:action :let={{_id, patient}}>
+    <div class="sr-only">
+      <.link navigate={~p"/patients/#{patient}"}>Show</.link>
+    </div>
+    <.link patch={~p"/patients/#{patient}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, patient}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: patient.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="patient-modal" show on_cancel={JS.patch(~p"/patients")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.PatientLive.FormComponent}
+    id={@patient.id || :new}
+    title={@page_title}
+    action={@live_action}
+    patient={@patient}
+    patch={~p"/patients"}
+  />
+</.modal>
