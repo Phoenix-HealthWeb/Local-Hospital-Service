@@ -63,7 +63,6 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign(:form, to_form(changeset))}
-
   end
 
   @impl true

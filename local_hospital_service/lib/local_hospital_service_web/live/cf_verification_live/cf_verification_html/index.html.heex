@@ -1,0 +1,45 @@
+<.header>
+  Verify Patient's CF
+  <:actions>
+    <.link patch={~p"/nurses/cf_verification"}>
+      <.button>Reset/Reload</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<div class="mt-6 mx-auto max-w-2xl px-4">
+  <%= if @show_patient_not_found_dialog do %>
+    <p class="text-lg mb-4">
+      This CF "<%= @cf_input %>" doesn't exist. Would you like to add it?
+    </p>
+    <div class="flex space-x-4">
+      <.button phx-click="create_patient" color="primary">
+        Yes
+      </.button>
+      <.button phx-click="cancel" color="secondary">
+        No
+      </.button>
+    </div>
+  <% else %>
+    <.simple_form :let={f} for={%{cf: @cf_input}} as={:form} phx-submit="check_cf" id="check-cf-form">
+      <.input
+        field={f[:cf]}
+        type="text"
+        label="Insert patient's CF"
+        placeholder="ABCDEF12G34H567I"
+      />
+      <!-- Se c'è un errore, lo mostriamo -->
+      <%= if @cf_error do %>
+        <p class="text-red-500 text-sm mt-1">
+          <%= @cf_error %>
+        </p>
+      <% end %>
+
+      <:actions>
+        <.button phx-disable-with="Verifying...">
+          Proceed
+        </.button>
+      </:actions>
+    </.simple_form>
+  <% end %>
+</div>
