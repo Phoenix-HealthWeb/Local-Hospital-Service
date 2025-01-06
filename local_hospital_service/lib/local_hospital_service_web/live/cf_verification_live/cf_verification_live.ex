@@ -50,7 +50,7 @@ defmodule LocalHospitalServiceWeb.CfVerificationLive do
   # Create_patient
   def handle_event("create_patient", _params, socket) do
     cf = socket.assigns.cf_input
-    {:noreply, redirect(socket, external: "http://localhost:4000/patients/new")}
+    {:noreply, redirect(socket, external: ~p"/nurses/patients/new")}
   end
 
   # Cancel
