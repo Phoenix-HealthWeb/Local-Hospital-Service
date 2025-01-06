@@ -35,7 +35,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.Index do
   defp apply_action(socket, :new, _params) do
     socket
     |> assign(:page_title, "New Encounter")
-    |> assign(:encounter, %Hospital.Encounter{})
+    |> assign(:encounter, %Hospital.Encounter{date_time: NaiveDateTime.utc_now(), status: "queue"})
   end
 
   defp apply_action(socket, :index, _params) do

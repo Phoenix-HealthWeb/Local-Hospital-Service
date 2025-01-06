@@ -3,6 +3,8 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
   alias LocalHospitalService.Hospital
 
+  require Logger
+
   @impl true
   def render(assigns) do
     ~H"""
@@ -23,13 +25,25 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
         <.input field={@form[:reason]} type="text" label="Reason" />
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
         <.input field={@form[:patient]} type="text" label="Patient" />
-
         <!-- Ward select -->
-        <.input field={@form[:ward_id]} type="select" options={@wards} prompt="Select a Ward" label="Ward" />
-
+        <.input
+          field={@form[:ward_id]}
+          type="select"
+          options={@wards}
+          prompt="Select a Ward"
+          label="Ward"
+          required
+        />
         <!-- Status select -->
-        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" />
-
+        <.input
+          field={@form[:status]}
+          type="select"
+          options={["queue", "in_visit"]}
+          prompt="Select a status"
+          label="Status"
+          disabled={@id == :new}
+          required
+        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Encounter</.button>
         </:actions>
@@ -77,7 +91,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
     case save_encounter(socket.assigns.action, socket.assigns.encounter, encounter_params) do
       {:ok, encounter} ->
-        send(self(), {:saved, encounter})
+        send(self(), {__MODULE__, {:saved, encounter}})
 
         {:noreply,
          socket

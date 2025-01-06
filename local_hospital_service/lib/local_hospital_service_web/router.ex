@@ -25,8 +25,12 @@ defmodule LocalHospitalServiceWeb.Router do
     live "/encounters/:id", EncounterLive.Show, :show
     live "/encounters/:id/show/edit", EncounterLive.Show, :edit
 
+    #pipe_through [:browser, :redirect_on_user_role]
+
+    # This page is actually never used. We rely on redirect_on_user_role to redirect to the correct landing page
     get "/", PageController, :home
   end
+
 
   scope "/doctors", LocalHospitalServiceWeb do
     pipe_through :browser
@@ -40,12 +44,48 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/admin", LocalHospitalServiceWeb do
     pipe_through :browser
+  end
+  scope "/nurses", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_nurse]
 
-    live "/wards", WardLive.Index, :index
-    live "/wards/new", WardLive.Index, :new
-    live "/wards/:id/edit", WardLive.Index, :edit
-    live "/wards/:id", WardLive.Show, :show
-    live "/wards/:id/show/edit", WardLive.Show, :edit
+    get "/", PageController, :nurses
+
+    live_session :nurses,
+      on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      live "/encounters", EncounterLive.Index, :index
+      live "/encounters/new", EncounterLive.Index, :new
+      live "/encounters/:id/edit", EncounterLive.Index, :edit
+
+      live "/encounters/:id", EncounterLive.Show, :show
+      live "/encounters/:id/show/edit", EncounterLive.Show, :edit
+    end
+  end
+
+  scope "/doctors", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_doctor]
+
+    get "/", PageController, :doctors
+
+    live_session :doctors,
+      on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      # TODO: Implement a page similar to the following
+      # live "/wards", WardLive.Index, :index
+    end
+  end
+
+  scope "/admin", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_admin]
+
+    get "/", PageController, :admins
+
+    live_session :admin,
+      on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      live "/wards", WardLive.Index, :index
+      live "/wards/new", WardLive.Index, :new
+      live "/wards/:id/edit", WardLive.Index, :edit
+      live "/wards/:id", WardLive.Show, :show
+      live "/wards/:id/show/edit", WardLive.Show, :edit
+    end
   end
 
   # Other scopes may use custom stacks.
@@ -91,6 +131,5 @@ defmodule LocalHospitalServiceWeb.Router do
 
     delete "/users/log_out", UserSessionController, :delete
   end
-
 
 end

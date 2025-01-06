@@ -1,7 +1,7 @@
 <.header>
   Listing Encounters
   <:actions>
-    <.link patch={~p"/encounters/new"}>
+    <.link patch={~p"/nurses/encounters/new"}>
       <.button>New Encounter</.button>
     </.link>
   </:actions>
@@ -10,7 +10,7 @@
 <.table
   id="encounters"
   rows={@streams.encounters}
-  row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
+  row_click={fn {_id, encounter} -> JS.navigate(~p"/nurses/encounters/#{encounter}") end}
 >
   <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
   <:col :let={{_id, encounter}} label="Ward">
@@ -34,7 +34,7 @@
     <% end %>
   </:col>
   <:action :let={{_id, encounter}}>
-    <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
+    <.link patch={~p"/nurses/encounters/#{encounter}/edit"}>Edit</.link>
   </:action>
   <:action :let={{id, encounter}}>
     <.link
@@ -46,7 +46,7 @@
   </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="encounter-modal" show on_cancel={JS.patch(~p"/encounters")}>
+<.modal :if={@live_action in [:new, :edit]} id="encounter-modal" show on_cancel={JS.patch(~p"/nurses/encounters")}>
   <.live_component
     module={LocalHospitalServiceWeb.EncounterLive.FormComponent}
     id={@encounter.id || :new}
@@ -54,6 +54,6 @@
     action={@live_action}
     encounter={@encounter}
     wards={@wards}
-    patch={~p"/encounters"}
+    patch={~p"/nurses/encounters"}
   />
 </.modal>
