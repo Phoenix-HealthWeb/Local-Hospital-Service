@@ -62,7 +62,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
     changeset =
       socket.assigns.encounter
-      |> Hospital.change_encounter(sanitized_params)
+      |> Hospital.change_encounter(encounter_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :form, to_form(changeset))}
@@ -75,7 +75,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
       |> Enum.reject(fn {key, _value} -> String.starts_with?(key, "_unused_") end)
       |> Enum.into(%{})
 
-    case save_encounter(socket.assigns.action, socket.assigns.encounter, sanitized_params) do
+    case save_encounter(socket.assigns.action, socket.assigns.encounter, encounter_params) do
       {:ok, encounter} ->
         send(self(), {:saved, encounter})
 

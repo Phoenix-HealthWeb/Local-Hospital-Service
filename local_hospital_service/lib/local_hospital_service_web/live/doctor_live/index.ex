@@ -142,11 +142,5 @@ def handle_event("add", %{"encounter" => encounter_params}, socket) do
   end
 end
 
-@impl true
-def handle_event("navigate_to_ward", %{"ward_id" => ward_id}, socket) do
-  # Verifica se il ward_id esiste e reindirizza alla route corrispondente
-  {:noreply, push_redirect(socket, to: Routes.doctor_ward_path(socket, :index, ward_id))}
-end
-
 
 end

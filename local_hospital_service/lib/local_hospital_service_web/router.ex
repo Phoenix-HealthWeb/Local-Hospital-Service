@@ -28,11 +28,11 @@ defmodule LocalHospitalServiceWeb.Router do
     get "/", PageController, :home
   end
 
-  scope "/", LocalHospitalServiceWeb do
+  scope "/doctors", LocalHospitalServiceWeb do
     pipe_through :browser
-    live "/doctors/wards", DoctorLive.Index, :index
-    live "/doctors/wards/:wardId", DoctorLive.Indexxx, :indexxx
-
+    live "/wards", DoctorLive.Index, :index
+    live "/wards/:wardId", DoctorLive.Indexxx, :indexxx
+    live "/wards/:wardId/visit", DoctorLive.Index2, :index2
     get "/", PageController, :home
   end
 
@@ -84,18 +84,7 @@ defmodule LocalHospitalServiceWeb.Router do
     post "/users/log_in", UserSessionController, :create
   end
 
-  scope "/doctors/:wardId", LocalHospitalServiceWeb do
-    pipe_through :browser
 
-    get "/", PatientController, :indexxxx
-  end
-
-  #da implementare
-  scope "/doctors/:wardId/visit/:encounterId", LocalHospitalServiceWeb do
-    pipe_through :browser
-
-    get "/", PatientController, :index
-  end
 
   scope "/", LocalHospitalServiceWeb do
     pipe_through [:browser]
