@@ -8,7 +8,7 @@ defmodule LocalHospitalService.Hospital do
 
   alias LocalHospitalService.Hospital.Ward
   alias LocalHospitalService.Hospital.Encounter
-  alias LocalHospitalService.Hospital.Patients
+
   # Wards
   def list_wards do
     Repo.all(Ward)

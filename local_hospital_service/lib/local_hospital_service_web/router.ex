@@ -26,7 +26,6 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/nurses", LocalHospitalServiceWeb do
     pipe_through [:browser, :require_authenticated_nurse]
-
     get "/", PageController, :nurses
 
     live_session :nurses,

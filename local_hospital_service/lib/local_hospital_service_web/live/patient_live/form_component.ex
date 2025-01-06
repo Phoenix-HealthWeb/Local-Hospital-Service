@@ -23,7 +23,13 @@ defmodule LocalHospitalServiceWeb.PatientLive.FormComponent do
         <.input field={@form[:firstname]} type="text" label="Firstname" />
         <.input field={@form[:lastname]} type="text" label="Lastname" />
         <.input field={@form[:date_of_birth]} type="date" label="Date of birth" />
-        <.input field={@form[:gender]} type="text" label="Gender" />
+        <.input
+           field={@form[:gender]}
+           type="select"
+           label="Gender"
+           options={[{"Male", "Male"}, {"Female", "Female"}]}
+           prompt="Select Gender"
+        />
         <:actions>
           <.button phx-disable-with="Saving...">Save Patient</.button>
         </:actions>
