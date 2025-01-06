@@ -28,6 +28,13 @@
         label="Insert patient's CF"
         placeholder="ABCDEF12G34H567I"
       />
+      <!-- Se c'è un errore, lo mostriamo -->
+      <%= if @cf_error do %>
+        <p class="text-red-500 text-sm mt-1">
+          <%= @cf_error %>
+        </p>
+      <% end %>
+
       <:actions>
         <.button phx-disable-with="Verifying...">
           Proceed
