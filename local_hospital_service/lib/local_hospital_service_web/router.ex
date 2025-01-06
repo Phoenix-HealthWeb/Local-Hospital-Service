@@ -32,19 +32,14 @@ defmodule LocalHospitalServiceWeb.Router do
   end
 
 
-  scope "/doctors", LocalHospitalServiceWeb do
-    pipe_through :browser
-    live "/wards", DoctorLive.Index, :index
-    live "/wards/:wardId", DoctorLive.Indexxx, :indexxx
-    live "/wards/:wardId/visit", DoctorLive.Index2, :index2
-    get "/", PageController, :home
-  end
+
 
 
 
   scope "/admin", LocalHospitalServiceWeb do
     pipe_through :browser
   end
+
   scope "/nurses", LocalHospitalServiceWeb do
     pipe_through [:browser, :require_authenticated_nurse]
 
@@ -68,8 +63,9 @@ defmodule LocalHospitalServiceWeb.Router do
 
     live_session :doctors,
       on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
-      # TODO: Implement a page similar to the following
-      # live "/wards", WardLive.Index, :index
+        live "/wards", DoctorLive.Index, :index
+        live "/wards/:wardId", DoctorLive.Indexxx, :indexxx
+        live "/wards/:wardId/visit", DoctorLive.Index2, :index2
     end
   end
 
