@@ -121,12 +121,20 @@ defmodule LocalHospitalService.Hospital do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_patient(attrs \\ %{}) do
-    %Patient{}
-    |> Patient.changeset(attrs)
-    |> Repo.insert()
-  end
+def create_patient(attrs \\ %{}) do
+  %Patient{}
+  |> Patient.changeset(attrs)
+  |> Repo.insert()
+  |> case do
+    {:ok, patient} ->
+      # Syncronize with NDB
+      LocalHospitalService.Hospital.Patient.syncronize_to_ndb(patient)
+      {:ok, patient}
 
+    {:error, changeset} ->
+      {:error, changeset}
+  end
+end
   @doc """
   Updates a patient.
 
