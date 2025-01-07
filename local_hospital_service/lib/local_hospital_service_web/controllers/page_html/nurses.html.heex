@@ -1,20 +1,41 @@
 <.flash_group flash={@flash} />
-
-
 <div class="container mx-auto px-4 py-8">
   <h1 class="text-3xl font-bold mb-8 text-center">Nurses Dashboard</h1>
-
+  
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Encounters Section -->
     <div class="bg-white rounded-lg shadow p-6">
       <h2 class="text-xl font-semibold mb-4">Encounters Management</h2>
+      
       <div class="space-y-3">
-        <a href={~p"/nurses/encounters/new"} class="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded">
+        <a
+          href={~p"/nurses/encounters/new"}
+          class="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded"
+        >
           ➕ Add New Encounter
         </a>
-        <a href={~p"/nurses/encounters"} class="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded">
+        
+        <a
+          href={~p"/nurses/encounters"}
+          class="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded"
+        >
           📋 View All Encounters
         </a>
+      </div>
+    </div>
+    <!-- CF Section -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Patient Verification</h2>
+      
+      <div class="space-y-3">
+        <div class="space-y-3">
+          <a
+            href={~p"/nurses/cf_verification"}
+            class="block px-4 py-2 text-blue-600 hover:bg-blue-50 rounded"
+          >
+            ➕ Verify patient's CF
+          </a>
+        </div>
       </div>
     </div>
   </div>
