@@ -12,7 +12,10 @@ defmodule LocalHospitalServiceWeb.UserLoginLive do
     ~H"""
     <div :if={@status == :input_email} class="mx-auto max-w-sm">
       <.header class="text-center">
-        Log in to account
+        Log in to your account
+        <:subtitle>
+          Perform access to start using the platform
+        </:subtitle>
       </.header>
 
       <.simple_form

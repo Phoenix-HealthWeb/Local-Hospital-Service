@@ -6,4 +6,16 @@ defmodule LocalHospitalServiceWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def nurses(conn, _params) do
+    render(conn, :nurses, layout: {LocalHospitalServiceWeb.Layouts, :app})
+  end
+
+  def doctors(conn, _params) do
+    render(conn, :doctors, layout: {LocalHospitalServiceWeb.Layouts, :app})
+  end
+
+  def admins(conn, _params) do
+    render(conn, :admins, layout: {LocalHospitalServiceWeb.Layouts, :app})
+  end
 end

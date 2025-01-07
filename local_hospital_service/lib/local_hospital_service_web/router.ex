@@ -18,27 +18,59 @@ defmodule LocalHospitalServiceWeb.Router do
   end
 
   scope "/", LocalHospitalServiceWeb do
-    pipe_through :browser
-    live "nurses/cf_verification", CfVerificationLive, :verify
-    live "nurses/encounters", EncounterLive.Index, :index
-    live "nurses/encounters/new", EncounterLive.Index, :new
-    live "nurses/encounters/:id/edit", EncounterLive.Index, :edit
+    pipe_through [:browser, :redirect_on_user_role]
 
-    live "nurses/encounters/:id", EncounterLive.Show, :show
-    live "nurses/encounters/:id/show/edit", EncounterLive.Show, :edit
-
+    # This page is actually never used. We rely on redirect_on_user_role to redirect to the correct landing page
     get "/", PageController, :home
-    get "/patients/new", PatientController, :new
+  end
+
+  scope "/nurses", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_nurse]
+    get "/", PageController, :nurses
+
+    live_session :nurses,
+      on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      live "/cf_verification", CfVerificationLive, :verify
+      live "/encounters", EncounterLive.Index, :index
+      live "/encounters/new", EncounterLive.Index, :new
+      live "/encounters/:id/edit", EncounterLive.Index, :edit
+
+      live "/encounters/:id", EncounterLive.Show, :show
+      live "/encounters/:id/show/edit", EncounterLive.Show, :edit
+
+      live "/patients", PatientLive.Index, :index
+      live "/patients/new", PatientLive.Index, :new
+      live "/patients/:id/edit", PatientLive.Index, :edit
+      live "/patients/:id", PatientLive.Show, :show
+      live "/patients/:id/show/edit", PatientLive.Show, :edit
+    end
+  end
+
+  scope "/doctors", LocalHospitalServiceWeb do
+    pipe_through [:browser, :require_authenticated_doctor]
+
+    get "/", PageController, :doctors
+
+    live_session :doctors,
+      on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      # TODO: Implement a page similar to the following
+      # live "/wards", WardLive.Index, :index
+    end
   end
 
   scope "/admin", LocalHospitalServiceWeb do
-    pipe_through :browser
+    pipe_through [:browser, :require_authenticated_admin]
 
-    live "/wards", WardLive.Index, :index
-    live "/wards/new", WardLive.Index, :new
-    live "/wards/:id/edit", WardLive.Index, :edit
-    live "/wards/:id", WardLive.Show, :show
-    live "/wards/:id/show/edit", WardLive.Show, :edit
+    get "/", PageController, :admins
+
+    live_session :admin,
+      on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      live "/wards", WardLive.Index, :index
+      live "/wards/new", WardLive.Index, :new
+      live "/wards/:id/edit", WardLive.Index, :edit
+      live "/wards/:id", WardLive.Show, :show
+      live "/wards/:id/show/edit", WardLive.Show, :edit
+    end
   end
 
   # Other scopes may use custom stacks.
