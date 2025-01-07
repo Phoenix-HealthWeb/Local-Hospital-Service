@@ -42,17 +42,23 @@ defmodule LocalHospitalServiceWeb.Router do
 
   scope "/nurses", LocalHospitalServiceWeb do
     pipe_through [:browser, :require_authenticated_nurse]
-
     get "/", PageController, :nurses
 
     live_session :nurses,
       on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
+      live "/cf_verification", CfVerificationLive, :verify
       live "/encounters", EncounterLive.Index, :index
       live "/encounters/new", EncounterLive.Index, :new
       live "/encounters/:id/edit", EncounterLive.Index, :edit
 
       live "/encounters/:id", EncounterLive.Show, :show
       live "/encounters/:id/show/edit", EncounterLive.Show, :edit
+
+      live "/patients", PatientLive.Index, :index
+      live "/patients/new", PatientLive.Index, :new
+      live "/patients/:id/edit", PatientLive.Index, :edit
+      live "/patients/:id", PatientLive.Show, :show
+      live "/patients/:id/show/edit", PatientLive.Show, :edit
     end
   end
 
