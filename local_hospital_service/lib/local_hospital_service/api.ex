@@ -37,7 +37,8 @@ defmodule LocalHospitalService.Api do
 
     case HTTPoison.post(url, stringified_body, get_headers(), []) do
       {:ok, %HTTPoison.Response{status_code: 201, body: body}} ->
-        {:ok, body}
+        %{data: data} = Jason.decode!(body, keys: :atoms)
+        {:ok, data}
 
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         {:ok, body}

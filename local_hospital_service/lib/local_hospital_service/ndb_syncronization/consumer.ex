@@ -61,6 +61,7 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
           tag,
           LocalHospitalService.Dto.Condition,
           unstructed_condition,
+          &Kernel.struct!(&1, &2),
           fn condition ->
             Logger.info("Consuming Condition: #{inspect(condition)}")
           end
@@ -72,6 +73,7 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
           tag,
           LocalHospitalService.Dto.MedicationRequest,
           unstructed_medication_request,
+          &Kernel.struct!(&1, &2),
           fn medication_request ->
             Logger.info("Consuming Medication Request: #{inspect(medication_request)}")
           end
@@ -83,9 +85,20 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
           tag,
           LocalHospitalService.Dto.Observation,
           unstructed_observation,
+          &Kernel.struct!(&1, &2),
           fn observation ->
             Logger.info("Consuming Observation: #{inspect(observation)}")
           end
+        )
+
+      {:ok, %{type: "patient", data: unstructed_patient}} ->
+        consume(
+          state.channel,
+          tag,
+          LocalHospitalService.Hospital.Patient,
+          unstructed_patient,
+          &LocalHospitalService.Hospital.Patient.struct!/2,
+          &LocalHospitalService.Api.Patient.create/1
         )
 
       {:ok, decoded} ->
@@ -114,11 +127,11 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
   # The payload is passed as an unstructured map, along with the desired struct to be created.
   # If the structuring process succeeds, the callback function is called with the structured payload.
   # Otherwise, the payload is rejected and not requeued.
-  defp consume(channel, tag, target_struct, unstructed, cb) do
+  defp consume(channel, tag, target_struct, unstructed, struct!, cb) do
     # Try to structure the payload, and handle if it fails
     structed_res =
       try do
-        {:ok, Kernel.struct!(target_struct, unstructed)}
+        {:ok, struct!.(target_struct, unstructed)}
       rescue
         exception ->
           Logger.warning(
