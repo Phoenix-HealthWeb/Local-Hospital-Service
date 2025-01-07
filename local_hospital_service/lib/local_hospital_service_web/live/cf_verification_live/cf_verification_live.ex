@@ -28,7 +28,7 @@ defmodule LocalHospitalServiceWeb.CfVerificationLive do
     else
       case Api.get("patients/#{cf}") do
         {:ok, _data} ->
-          {:noreply, push_redirect(socket, to: ~p"/nurses/encounters/new")}
+          {:noreply, push_navigate(socket, to: ~p"/nurses/patients/new")}
 
         {:error, %{status_code: 404}} ->
           {:noreply,
@@ -59,6 +59,6 @@ defmodule LocalHospitalServiceWeb.CfVerificationLive do
      socket
      |> assign(:show_patient_not_found_dialog, false)
      |> assign(:cf_input, "")
-     |> push_patch(to: ~p"/cf_verification")}
+     |> push_patch(to: ~p"/nurses/cf_verification")}
   end
 end
