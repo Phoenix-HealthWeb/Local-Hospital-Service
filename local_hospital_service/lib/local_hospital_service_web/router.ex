@@ -17,12 +17,12 @@ defmodule LocalHospitalServiceWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/", LocalHospitalServiceWeb do
+    pipe_through [:browser, :redirect_on_user_role]
 
-
-
-
-
-
+    # This page is actually never used. We rely on redirect_on_user_role to redirect to the correct landing page
+    get "/", PageController, :home
+  end
 
   scope "/admin", LocalHospitalServiceWeb do
     pipe_through :browser
@@ -57,9 +57,9 @@ defmodule LocalHospitalServiceWeb.Router do
 
     live_session :doctors,
       on_mount: [{LocalHospitalServiceWeb.UserAuth, :mount_current_user}] do
-        live "/wards", DoctorLive.Index, :index
-        live "/wards/:wardId", DoctorLive.Indexxx, :indexxx
-        live "/wards/:wardId/visit", DoctorLive.Index2, :index2
+      live "/wards", DoctorLive.Index, :index
+      live "/wards/:wardId", DoctorLive.Indexxx, :indexxx
+      live "/wards/:wardId/visit", DoctorLive.Index2, :index2
     end
   end
 
@@ -114,12 +114,9 @@ defmodule LocalHospitalServiceWeb.Router do
     post "/users/log_in", UserSessionController, :create
   end
 
-
-
   scope "/", LocalHospitalServiceWeb do
     pipe_through [:browser]
 
     delete "/users/log_out", UserSessionController, :delete
   end
-
 end
