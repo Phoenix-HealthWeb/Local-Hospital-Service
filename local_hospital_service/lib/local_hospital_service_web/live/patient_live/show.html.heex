@@ -1,11 +1,6 @@
 <.header>
   Patient <%= @patient.id %>
   <:subtitle>This is a patient record from your database.</:subtitle>
-  <:actions>
-    <.link patch={~p"/nurses/patients/#{@patient}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit patient</.button>
-    </.link>
-  </:actions>
 </.header>
 
 <.list>
