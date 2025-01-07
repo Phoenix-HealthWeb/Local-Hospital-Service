@@ -47,7 +47,7 @@ defmodule LocalHospitalServiceWeb.DoctorLive.Index2 do
       # Filtra gli encounters usando l'ID della ward
       encounters = Hospital.list_encounters()
       |> Enum.filter(&(&1.ward_id == ward_id))
-      |> Enum.filter(&(&1.status == "queue"))
+      |> Enum.filter(&(&1.status == "in_visit"))
 
       priority_queue = create_priority_queue(encounters) |> Enum.reverse()
 

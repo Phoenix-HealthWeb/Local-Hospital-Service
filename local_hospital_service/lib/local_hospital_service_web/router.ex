@@ -17,19 +17,7 @@ defmodule LocalHospitalServiceWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", LocalHospitalServiceWeb do
-    pipe_through :browser
-    live "/encounters", EncounterLive.Index, :index
-    live "/encounters/new", EncounterLive.Index, :new
-    live "/encounters/:id/edit", EncounterLive.Index, :edit
-    live "/encounters/:id", EncounterLive.Show, :show
-    live "/encounters/:id/show/edit", EncounterLive.Show, :edit
 
-    #pipe_through [:browser, :redirect_on_user_role]
-
-    # This page is actually never used. We rely on redirect_on_user_role to redirect to the correct landing page
-    get "/", PageController, :home
-  end
 
 
 
