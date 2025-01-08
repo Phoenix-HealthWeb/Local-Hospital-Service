@@ -21,6 +21,13 @@ defmodule LocalHospitalService.Hospital.Patient do
     |> validate_required([:cf, :firstname, :lastname, :date_of_birth, :gender])
   end
 
+  @doc false
+  def changeset_relaxed(patient, attrs) do
+    patient
+    |> cast(attrs, [:id])
+    |> validate_required([:id])
+  end
+
   @doc """
   Used to create a Patient struct from a map.
   """

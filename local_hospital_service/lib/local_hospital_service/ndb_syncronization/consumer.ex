@@ -7,6 +7,8 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
 
   require Logger
 
+  @sleep_millis 5000
+
   @doc """
   Called by the supervisor to start process.
   """
@@ -53,42 +55,35 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
         {:basic_deliver, payload, %{delivery_tag: tag, redelivered: _redelivered}} = _meta,
         state
       ) do
-    # TODO: You might want to run payload consumption in separate Tasks in production
     case Jason.decode(payload, keys: :atoms) do
       {:ok, %{type: "condition", data: unstructed_condition}} ->
         consume(
           state.channel,
           tag,
-          LocalHospitalService.Dto.Condition,
+          LocalHospitalService.Conditions.Condition,
           unstructed_condition,
-          &Kernel.struct!(&1, &2),
-          fn condition ->
-            Logger.info("Consuming Condition: #{inspect(condition)}")
-          end
+          &LocalHospitalService.Conditions.Condition.struct!/2,
+          &LocalHospitalService.Api.Condition.create/1
         )
 
       {:ok, %{type: "medication_request", data: unstructed_medication_request}} ->
         consume(
           state.channel,
           tag,
-          LocalHospitalService.Dto.MedicationRequest,
+          LocalHospitalService.MedicationRequests.MedicationRequest,
           unstructed_medication_request,
-          &Kernel.struct!(&1, &2),
-          fn medication_request ->
-            Logger.info("Consuming Medication Request: #{inspect(medication_request)}")
-          end
+          &LocalHospitalService.MedicationRequests.MedicationRequest.struct!/2,
+          &LocalHospitalService.Api.MedicationRequest.create/1
         )
 
       {:ok, %{type: "observation", data: unstructed_observation}} ->
         consume(
           state.channel,
           tag,
-          LocalHospitalService.Dto.Observation,
+          LocalHospitalService.Observations.Observation,
           unstructed_observation,
-          &Kernel.struct!(&1, &2),
-          fn observation ->
-            Logger.info("Consuming Observation: #{inspect(observation)}")
-          end
+          &LocalHospitalService.Observations.Observation.struct!/2,
+          &LocalHospitalService.Api.Observation.create/1
         )
 
       {:ok, %{type: "patient", data: unstructed_patient}} ->
@@ -128,32 +123,29 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
   # If the structuring process succeeds, the callback function is called with the structured payload.
   # Otherwise, the payload is rejected and not requeued.
   defp consume(channel, tag, target_struct, unstructed, struct!, cb) do
-    # Try to structure the payload, and handle if it fails
-    structed_res =
-      try do
-        {:ok, struct!.(target_struct, unstructed)}
-      rescue
-        exception ->
+    try do
+      struct!.(target_struct, unstructed)
+      |> cb.()
+      |> case do
+        {:ok, _} ->
+          :ok = AMQP.Basic.ack(channel, tag)
+
+        # The only condition to requeue a message if the connection is failed
+        {:error, :econnrefused} ->
           Logger.warning(
-            "Failed to struct payload: #{inspect(unstructed)} to #{target_struct}. Error: #{inspect(exception)}"
+            "NDB API received :econnrefused. Sleeping #{@sleep_millis}ms, then requeuing the message"
           )
 
-          :error
+          Process.sleep(@sleep_millis)
+          :ok = AMQP.Basic.reject(channel, tag, requeue: true)
+
+        {:error, err} ->
+          raise err
       end
-
-    case structed_res do
-      {:ok, structed} ->
-        try do
-          cb.(structed)
-
-          :ok = AMQP.Basic.ack(channel, tag)
-        rescue
-          # Here the payload is well-formed but the consumption process failed. It should be requeued
-          _ -> :ok = AMQP.Basic.reject(channel, tag, requeue: true)
-        end
-
-      # In case of structuring failure, the payload is malformed and should not be requeued
-      :error ->
+    rescue
+      # Here something went wrong on either sending the request or receiving the response. The payload should not be requeued.
+      err ->
+        Logger.warning("Failed to consume payload. Error: #{inspect(err)}")
         :ok = AMQP.Basic.reject(channel, tag, requeue: false)
     end
   end

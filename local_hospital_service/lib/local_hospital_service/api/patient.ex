@@ -1,6 +1,4 @@
 defmodule LocalHospitalService.Api.Patient do
-  require Logger
-
   @doc """
   Creates a Patient if its CF does not already exist.
   """
@@ -9,8 +7,8 @@ defmodule LocalHospitalService.Api.Patient do
       patient: LocalHospitalService.Hospital.Patient.data(patient)
     })
     |> case do
-      {:ok, data} -> LocalHospitalService.Hospital.Patient.struct!(nil, data)
-      {:error, _} -> nil
+      {:ok, data} -> {:ok, LocalHospitalService.Hospital.Patient.struct!(nil, data)}
+      {:error, reason} -> {:error, reason}
     end
   end
 
