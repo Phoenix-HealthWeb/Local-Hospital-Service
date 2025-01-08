@@ -53,18 +53,15 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
         {:basic_deliver, payload, %{delivery_tag: tag, redelivered: _redelivered}} = _meta,
         state
       ) do
-    # TODO: You might want to run payload consumption in separate Tasks in production
     case Jason.decode(payload, keys: :atoms) do
       {:ok, %{type: "condition", data: unstructed_condition}} ->
         consume(
           state.channel,
           tag,
-          LocalHospitalService.Dto.Condition,
+          LocalHospitalService.Conditions.Condition,
           unstructed_condition,
-          &Kernel.struct!(&1, &2),
-          fn condition ->
-            Logger.info("Consuming Condition: #{inspect(condition)}")
-          end
+          &LocalHospitalService.Conditions.Condition.struct!/2,
+          &LocalHospitalService.Api.Condition.create/1
         )
 
       {:ok, %{type: "medication_request", data: unstructed_medication_request}} ->

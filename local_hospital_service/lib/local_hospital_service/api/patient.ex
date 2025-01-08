@@ -1,6 +1,4 @@
 defmodule LocalHospitalService.Api.Patient do
-  require Logger
-
   @doc """
   Creates a Patient if its CF does not already exist.
   """
