@@ -41,8 +41,12 @@ defmodule LocalHospitalService.Conditions.Condition do
       id: condition.id,
       comment: condition.comment,
       date_time: condition.date_time,
-      patient_id: condition.patient.id,
-      practitioner_id: condition.practitioner.id
+      patient: %{
+        id: condition.patient.id
+      },
+      practitioner: %{
+        id: condition.practitioner.id
+      }
     }
   end
 
