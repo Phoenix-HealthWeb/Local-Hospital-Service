@@ -1,7 +1,6 @@
 defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -37,7 +36,10 @@ defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
      |> assign(assigns)
      |> assign_new(:form, fn ->
        to_form(
-         LocalHospitalService.MedicationRequests.MedicationRequest.changeset(medication_request, %{})
+         LocalHospitalService.MedicationRequests.MedicationRequest.changeset(
+           medication_request,
+           %{}
+         )
        )
      end)}
   end
@@ -60,7 +62,10 @@ defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
   defp save_medication_request(socket, :new, medication_request_params) do
     :ok =
       LocalHospitalService.MedicationRequests.MedicationRequest.syncronize_to_ndb(
-        medication_request_params
+        LocalHospitalService.MedicationRequests.MedicationRequest.struct!(
+          nil,
+          medication_request_params
+        )
       )
 
     notify_parent({:saved, medication_request_params})

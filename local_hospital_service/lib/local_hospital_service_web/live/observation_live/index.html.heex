@@ -1,0 +1,44 @@
+<.header>
+  Listing Observation
+  <:actions>
+    <.link patch={~p"/observation/new"}>
+      <.button>New Observation</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="observation"
+  rows={@streams.observation_collection}
+  row_click={fn {_id, observation} -> JS.navigate(~p"/observation/#{observation}") end}
+>
+  <:col :let={{_id, observation}} label="Date time"><%= observation.date_time %></:col>
+  <:col :let={{_id, observation}} label="Ward"><%= observation.ward %></:col>
+  <:col :let={{_id, observation}} label="Hospital"><%= observation.hospital_id %></:col>
+  <:col :let={{_id, observation}} label="Result"><%= observation.result %></:col>
+  <:action :let={{_id, observation}}>
+    <div class="sr-only">
+      <.link navigate={~p"/observation/#{observation}"}>Show</.link>
+    </div>
+    <.link patch={~p"/observation/#{observation}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, observation}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: observation.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="observation-modal" show on_cancel={JS.patch(~p"/observation")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.ObservationLive.FormComponent}
+    id={@observation.id || :new}
+    title={@page_title}
+    action={@live_action}
+    observation={@observation}
+    patch={~p"/observation"}
+  />
+</.modal>

@@ -78,12 +78,10 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
         consume(
           state.channel,
           tag,
-          LocalHospitalService.Dto.Observation,
+          LocalHospitalService.Observations.Observation,
           unstructed_observation,
-          &Kernel.struct!(&1, &2),
-          fn observation ->
-            Logger.info("Consuming Observation: #{inspect(observation)}")
-          end
+          &LocalHospitalService.Observations.Observation.struct!/2,
+          &LocalHospitalService.Api.Observation.create/1
         )
 
       {:ok, %{type: "patient", data: unstructed_patient}} ->
