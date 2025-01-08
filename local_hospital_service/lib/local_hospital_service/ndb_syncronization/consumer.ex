@@ -142,7 +142,9 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
           :ok = AMQP.Basic.ack(channel, tag)
         rescue
           # Here the payload is well-formed but the consumption process failed. It should be requeued
-          _ -> :ok = AMQP.Basic.reject(channel, tag, requeue: true)
+          err ->
+            Logger.warning("Failed to consume payload. Error: #{inspect(err)}")
+            :ok = AMQP.Basic.reject(channel, tag, requeue: true)
         end
 
       # In case of structuring failure, the payload is malformed and should not be requeued
