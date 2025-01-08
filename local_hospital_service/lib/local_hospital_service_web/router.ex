@@ -70,13 +70,6 @@ defmodule LocalHospitalServiceWeb.Router do
       live "/wards/:id/edit", WardLive.Index, :edit
       live "/wards/:id", WardLive.Show, :show
       live "/wards/:id/show/edit", WardLive.Show, :edit
-
-      # TODO: Just for testing
-      live "/conditions", ConditionLive.Index, :index
-      live "/conditions/new", ConditionLive.Index, :new
-      # live "/conditions/:id/edit", ConditionLive.Index, :edit
-
-      # live "/conditions/:id/show/edit", ConditionLive.Show, :edit
     end
   end
 
