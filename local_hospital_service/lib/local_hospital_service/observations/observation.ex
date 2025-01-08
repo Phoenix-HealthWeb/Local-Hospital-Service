@@ -19,7 +19,7 @@ defmodule LocalHospitalService.Observations.Observation do
     |> cast(attrs, [:date_time, :ward, :result, :hospital_id])
     |> cast_assoc(:patient, with: &LocalHospitalService.Hospital.Patient.changeset_relaxed/2)
     |> cast_assoc(:practitioner, with: &LocalHospitalService.Accounts.User.changeset_relaxed/2)
-    |> validate_required([:date_time, :ward, :result, :hospital_id])
+    |> validate_required([:date_time, :ward, :result])
   end
 
   @doc """
