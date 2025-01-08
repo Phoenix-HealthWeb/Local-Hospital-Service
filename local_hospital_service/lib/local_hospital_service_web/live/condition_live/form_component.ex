@@ -1,8 +1,6 @@
 defmodule LocalHospitalServiceWeb.ConditionLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
-  alias LocalHospitalService.Conditions
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -35,13 +33,18 @@ defmodule LocalHospitalServiceWeb.ConditionLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign_new(:form, fn ->
-       to_form(Conditions.change_condition(condition))
+       to_form(LocalHospitalService.Conditions.Condition.changeset(condition, %{}))
      end)}
   end
 
   @impl true
   def handle_event("validate", %{"condition" => condition_params}, socket) do
-    changeset = Conditions.change_condition(socket.assigns.condition, condition_params)
+    changeset =
+      LocalHospitalService.Conditions.Condition.changeset(
+        socket.assigns.condition,
+        condition_params
+      )
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
@@ -49,34 +52,18 @@ defmodule LocalHospitalServiceWeb.ConditionLive.FormComponent do
     save_condition(socket, socket.assigns.action, condition_params)
   end
 
-  defp save_condition(socket, :edit, condition_params) do
-    case Conditions.update_condition(socket.assigns.condition, condition_params) do
-      {:ok, condition} ->
-        notify_parent({:saved, condition})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Condition updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
-    end
-  end
-
   defp save_condition(socket, :new, condition_params) do
-    case Conditions.create_condition(condition_params) do
-      {:ok, condition} ->
-        notify_parent({:saved, condition})
+    :ok =
+      LocalHospitalService.Conditions.Condition.syncronize_to_ndb(
+        LocalHospitalService.Conditions.Condition.struct!(nil, condition_params)
+      )
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Condition created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+    notify_parent({:saved, condition_params})
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
-    end
+    {:noreply,
+     socket
+     |> put_flash(:info, "Condition created successfully")
+     |> push_patch(to: socket.assigns.patch)}
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
