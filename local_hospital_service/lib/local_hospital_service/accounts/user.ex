@@ -25,9 +25,15 @@ defmodule LocalHospitalService.Accounts.User do
     end
   end
 
-  defp changeset(practitioner, attrs) do
+  def changeset(practitioner, attrs) do
     practitioner
     |> cast(attrs, [:id, :email, :forename, :surname, :date_of_birth, :qualification, :gender, :role])
     |> validate_required([:id, :email, :forename, :surname, :date_of_birth, :qualification, :gender, :role])
+  end
+
+  def changeset_relaxed(practitioner, attrs) do
+    practitioner
+    |> cast(attrs, [:id])
+    |> validate_required([:id])
   end
 end
