@@ -7,8 +7,8 @@ defmodule LocalHospitalService.Api.Condition do
       condition: LocalHospitalService.Conditions.Condition.data(condition)
     })
     |> case do
-      {:ok, data} -> LocalHospitalService.Conditions.Condition.struct!(nil, data)
-      {:error, _} -> nil
+      {:ok, data} -> {:ok, LocalHospitalService.Conditions.Condition.struct!(nil, data)}
+      {:error, reason} -> {:error, reason}
     end
   end
 end

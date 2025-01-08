@@ -7,8 +7,8 @@ defmodule LocalHospitalService.Api.Observation do
       observation: LocalHospitalService.Observations.Observation.data(observation)
     })
     |> case do
-      {:ok, data} -> LocalHospitalService.Observations.Observation.struct!(nil, data)
-      {:error, _} -> nil
+      {:ok, data} -> {:ok, LocalHospitalService.Observations.Observation.struct!(nil, data)}
+      {:error, reason} -> {:error, reason}
     end
   end
 end

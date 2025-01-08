@@ -121,34 +121,24 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
   # If the structuring process succeeds, the callback function is called with the structured payload.
   # Otherwise, the payload is rejected and not requeued.
   defp consume(channel, tag, target_struct, unstructed, struct!, cb) do
-    # Try to structure the payload, and handle if it fails
-    structed_res =
-      try do
-        {:ok, struct!.(target_struct, unstructed)}
-      rescue
-        exception ->
-          Logger.warning(
-            "Failed to struct payload: #{inspect(unstructed)} to #{target_struct}. Error: #{inspect(exception)}"
-          )
-
-          :error
-      end
-
-    case structed_res do
-      {:ok, structed} ->
-        try do
-          cb.(structed)
-
+    try do
+      struct!.(target_struct, unstructed)
+      |> cb.()
+      |> case do
+        {:ok, _} ->
           :ok = AMQP.Basic.ack(channel, tag)
-        rescue
-          # Here the payload is well-formed but the consumption process failed. It should be requeued
-          err ->
-            Logger.warning("Failed to consume payload. Error: #{inspect(err)}")
-            :ok = AMQP.Basic.reject(channel, tag, requeue: true)
-        end
 
-      # In case of structuring failure, the payload is malformed and should not be requeued
-      :error ->
+        # The only condition to requeue a message if the connection is failed
+        {:error, :econnrefused} ->
+          :ok = AMQP.Basic.reject(channel, tag, requeue: true)
+
+        {:error, err} ->
+          raise err
+      end
+    rescue
+      # Here something went wrong on either sending the request or receiving the response. The payload should not be requeued.
+      err ->
+        Logger.warning("Failed to consume payload. Error: #{inspect(err)}")
         :ok = AMQP.Basic.reject(channel, tag, requeue: false)
     end
   end
