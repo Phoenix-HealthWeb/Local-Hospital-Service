@@ -37,7 +37,7 @@ defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
      |> assign(assigns)
      |> assign_new(:form, fn ->
        to_form(
-         LocalHospitalService.MedicationRequests.MedicationRequest.changeset(medication_request)
+         LocalHospitalService.MedicationRequests.MedicationRequest.changeset(medication_request, %{})
        )
      end)}
   end
