@@ -5,6 +5,8 @@ defmodule LocalHospitalService.Conditions.Condition do
   schema "conditions" do
     field :comment, :string
     field :date_time, :utc_datetime
+    belongs_to :patient, LocalHospitalService.Hospital.Patient
+    belongs_to :practitioner, LocalHospitalService.Accounts.User
 
     timestamps(type: :utc_datetime)
   end
