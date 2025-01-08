@@ -1,0 +1,29 @@
+<.header>
+  Medication request <%= @medication_request.id %>
+  <:subtitle>This is a medication_request record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/medication_request/#{@medication_request}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit medication_request</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Date time"><%= @medication_request.date_time %></:item>
+  <:item title="Expiration date"><%= @medication_request.expiration_date %></:item>
+  <:item title="Medication"><%= @medication_request.medication %></:item>
+  <:item title="Posology"><%= @medication_request.posology %></:item>
+</.list>
+
+<.back navigate={~p"/medication_request"}>Back to medication_request</.back>
+
+<.modal :if={@live_action == :edit} id="medication_request-modal" show on_cancel={JS.patch(~p"/medication_request/#{@medication_request}")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.MedicationRequestLive.FormComponent}
+    id={@medication_request.id}
+    title={@page_title}
+    action={@live_action}
+    medication_request={@medication_request}
+    patch={~p"/medication_request/#{@medication_request}"}
+  />
+</.modal>

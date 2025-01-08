@@ -20,6 +20,7 @@ defmodule LocalHospitalService.NdbSyncronization.Producer do
     {:ok, %{channel: channel, queue_name: queue_name}}
   end
 
+  @spec produce(any()) :: :ok
   @doc """
   Used to publish a message to the queue.
   """
