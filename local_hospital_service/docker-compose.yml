@@ -42,6 +42,8 @@ services:
             - RABBITMQ_URL=${RABBITMQ_URL_COMPOSE}
         ports:
             - "${PHX_PORT}:${PHX_PORT}"
+        extra_hosts:
+            - host.docker.internal:host-gateway
         depends_on:
             rabbitmq:
                 condition: service_healthy
