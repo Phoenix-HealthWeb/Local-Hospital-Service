@@ -7,6 +7,8 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
 
   require Logger
 
+  @sleep_millis 5000
+
   @doc """
   Called by the supervisor to start process.
   """
@@ -130,6 +132,11 @@ defmodule LocalHospitalService.NdbSyncronization.Consumer do
 
         # The only condition to requeue a message if the connection is failed
         {:error, :econnrefused} ->
+          Logger.warning(
+            "NDB API received :econnrefused. Sleeping #{@sleep_millis}ms, then requeuing the message"
+          )
+
+          Process.sleep(@sleep_millis)
           :ok = AMQP.Basic.reject(channel, tag, requeue: true)
 
         {:error, err} ->
