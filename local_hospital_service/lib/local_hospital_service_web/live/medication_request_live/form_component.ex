@@ -1,7 +1,6 @@
 defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
-  alias LocalHospitalService.MedicationRequests
 
   @impl true
   def render(assigns) do
@@ -37,13 +36,20 @@ defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
      socket
      |> assign(assigns)
      |> assign_new(:form, fn ->
-       to_form(MedicationRequests.change_medication_request(medication_request))
+       to_form(
+         LocalHospitalService.MedicationRequests.MedicationRequest.changeset(medication_request)
+       )
      end)}
   end
 
   @impl true
   def handle_event("validate", %{"medication_request" => medication_request_params}, socket) do
-    changeset = MedicationRequests.change_medication_request(socket.assigns.medication_request, medication_request_params)
+    changeset =
+      LocalHospitalService.MedicationRequests.MedicationRequest.changeset(
+        socket.assigns.medication_request,
+        medication_request_params
+      )
+
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
@@ -51,34 +57,18 @@ defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
     save_medication_request(socket, socket.assigns.action, medication_request_params)
   end
 
-  defp save_medication_request(socket, :edit, medication_request_params) do
-    case MedicationRequests.update_medication_request(socket.assigns.medication_request, medication_request_params) do
-      {:ok, medication_request} ->
-        notify_parent({:saved, medication_request})
-
-        {:noreply,
-         socket
-         |> put_flash(:info, "Medication request updated successfully")
-         |> push_patch(to: socket.assigns.patch)}
-
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
-    end
-  end
-
   defp save_medication_request(socket, :new, medication_request_params) do
-    case MedicationRequests.create_medication_request(medication_request_params) do
-      {:ok, medication_request} ->
-        notify_parent({:saved, medication_request})
+    :ok =
+      LocalHospitalService.MedicationRequests.MedicationRequest.syncronize_to_ndb(
+        medication_request_params
+      )
 
-        {:noreply,
-         socket
-         |> put_flash(:info, "Medication request created successfully")
-         |> push_patch(to: socket.assigns.patch)}
+    notify_parent({:saved, medication_request_params})
 
-      {:error, %Ecto.Changeset{} = changeset} ->
-        {:noreply, assign(socket, form: to_form(changeset))}
-    end
+    {:noreply,
+     socket
+     |> put_flash(:info, "Medication request created successfully")
+     |> push_patch(to: socket.assigns.patch)}
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
