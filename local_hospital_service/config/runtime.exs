@@ -23,7 +23,8 @@ end
 # Configure the url for the NDB Rest APIs
 config :local_hospital_service, LocalHospitalService.Api,
   ndb_url: System.fetch_env!("NDB_URL"),
-  ndb_api_key: System.fetch_env!("NDB_API_KEY")
+  ndb_api_key: System.fetch_env!("NDB_API_KEY"),
+  ndb_api_hospital_id: System.fetch_env!("NDB_API_HOSPITAL_ID")
 
 # Configure the url for the RabbitMQ container
 config :local_hospital_service, LocalHospitalService.NdbSyncronization,
