@@ -57,7 +57,9 @@ defmodule LocalHospitalService.Api do
   defp get_headers() do
     [
       {"Content-Type", "application/json"},
-      {"Accept", "application/json"}
+      {"Accept", "application/json"},
+      {"x-hospital-id", Application.get_env(:local_hospital_service, __MODULE__)[:ndb_api_hospital_id]},
+      {"x-api-key", Application.get_env(:local_hospital_service, __MODULE__)[:ndb_api_key]}
     ]
   end
 

@@ -40,6 +40,8 @@ services:
             - NDB_URL=${NDB_URL}
             # When using compose, rabbitm can't be accessed by localhost, so another variable is needed
             - RABBITMQ_URL=${RABBITMQ_URL_COMPOSE}
+            - NDB_API_KEY=${NDB_API_KEY}
+            - NDB_API_HOSPITAL_ID=${NDB_API_HOSPITAL_ID}
         ports:
             - "${PHX_PORT}:${PHX_PORT}"
         extra_hosts:
