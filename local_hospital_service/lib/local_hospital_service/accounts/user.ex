@@ -11,10 +11,8 @@ defmodule LocalHospitalService.Accounts.User do
     field :surname, :string
     field :date_of_birth, :date
     field :qualification, :string
-    field :gender_id, :id
-    field :role_id, :id
-    # has_many :medication_requests, NdbRestApi.MedicationRequests.MedicationRequest
-    # timestamps(type: :utc_datetime)
+    field :gender, :string
+    field :role, :string
   end
 
   def struct!(struct) do
@@ -27,9 +25,15 @@ defmodule LocalHospitalService.Accounts.User do
     end
   end
 
-  defp changeset(practitioner, attrs) do
+  def changeset(practitioner, attrs) do
     practitioner
-    |> cast(attrs, [:id, :email, :forename, :surname, :date_of_birth, :qualification])
-    |> validate_required([:id, :email, :forename, :surname, :date_of_birth, :qualification])
+    |> cast(attrs, [:id, :email, :forename, :surname, :date_of_birth, :qualification, :gender, :role])
+    |> validate_required([:id, :email, :forename, :surname, :date_of_birth, :qualification, :gender, :role])
+  end
+
+  def changeset_relaxed(practitioner, attrs) do
+    practitioner
+    |> cast(attrs, [:id])
+    |> validate_required([:id])
   end
 end

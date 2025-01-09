@@ -20,7 +20,7 @@ defmodule LocalHospitalServiceWeb.WardLive.FormComponent do
         phx-submit="save"
       >
         <.input field={@form[:name]} type="text" label="Name" />
-        <.input field={@form[:description]} type="text" label="description" />
+        <.input field={@form[:description]} type="text" label="Description" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Ward</.button>
         </:actions>

@@ -1,0 +1,25 @@
+<.header>
+  Patient <%= @patient.id %>
+  <:subtitle>This is a patient record from your database.</:subtitle>
+</.header>
+
+<.list>
+  <:item title="Cf"><%= @patient.cf %></:item>
+  <:item title="Firstname"><%= @patient.firstname %></:item>
+  <:item title="Lastname"><%= @patient.lastname %></:item>
+  <:item title="Date of birth"><%= @patient.date_of_birth %></:item>
+  <:item title="Gender"><%= @patient.gender %></:item>
+</.list>
+
+<.back navigate={~p"/nurses/patients"}>Back to patients</.back>
+
+<.modal :if={@live_action == :edit} id="patient-modal" show on_cancel={JS.patch(~p"/nurses/patients/#{@patient}")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.PatientLive.FormComponent}
+    id={@patient.id}
+    title={@page_title}
+    action={@live_action}
+    patient={@patient}
+    patch={~p"/nurses/patients/#{@patient}"}
+  />
+</.modal>

@@ -3,7 +3,8 @@ defmodule LocalHospitalService.Hospital.Encounter do
   import Ecto.Changeset
 
   # Fixed wrong field
-  @statuses ~w(queue in_visit)a
+  @statuses ["queue", "in_visit"]
+  #Fixed in_visit not being selected correctly
 
   schema "encounters" do
     field :priority, :integer
@@ -22,6 +23,6 @@ defmodule LocalHospitalService.Hospital.Encounter do
     |> cast(attrs, [:priority, :reason, :date_time, :patient, :status, :ward_id])
     |> validate_required([:priority, :reason, :date_time, :patient, :status, :ward_id])
     |> assoc_constraint(:ward)
-    |> validate_inclusion(:status, @statuses)
+    |> validate_inclusion(:status, ["queue", "in_visit"])
   end
 end

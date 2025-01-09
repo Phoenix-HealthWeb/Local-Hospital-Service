@@ -17,19 +17,19 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
     setup [:create_ward]
 
     test "lists all wards", %{conn: conn, ward: ward} do
-      {:ok, _index_live, html} = live(conn, ~p"/wards")
+      {:ok, _index_live, html} = live(conn, ~p"/admin/wards")
 
       assert html =~ "Listing Wards"
       assert html =~ ward.name
     end
 
     test "saves new ward", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/wards")
+      {:ok, index_live, _html} = live(conn, ~p"/admin/wards")
 
       assert index_live |> element("a", "New Ward") |> render_click() =~
                "New Ward"
 
-      assert_patch(index_live, ~p"/wards/new")
+      assert_patch(index_live, ~p"/admin/wards/new")
 
       assert index_live
              |> form("#ward-form", ward: @invalid_attrs)
@@ -39,7 +39,7 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
              |> form("#ward-form", ward: @create_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/wards")
+      assert_patch(index_live, ~p"/admin/wards")
 
       html = render(index_live)
       assert html =~ "Ward created successfully"
@@ -47,12 +47,12 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
     end
 
     test "updates ward in listing", %{conn: conn, ward: ward} do
-      {:ok, index_live, _html} = live(conn, ~p"/wards")
+      {:ok, index_live, _html} = live(conn, ~p"/admin/wards")
 
       assert index_live |> element("#wards-#{ward.id} a", "Edit") |> render_click() =~
                "Edit Ward"
 
-      assert_patch(index_live, ~p"/wards/#{ward}/edit")
+      assert_patch(index_live, ~p"/admin/wards/#{ward}/edit")
 
       assert index_live
              |> form("#ward-form", ward: @invalid_attrs)
@@ -62,7 +62,7 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
              |> form("#ward-form", ward: @update_attrs)
              |> render_submit()
 
-      assert_patch(index_live, ~p"/wards")
+      assert_patch(index_live, ~p"/admin/wards")
 
       html = render(index_live)
       assert html =~ "Ward updated successfully"
@@ -70,7 +70,7 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
     end
 
     test "deletes ward in listing", %{conn: conn, ward: ward} do
-      {:ok, index_live, _html} = live(conn, ~p"/wards")
+      {:ok, index_live, _html} = live(conn, ~p"/admin/wards")
 
       assert index_live |> element("#wards-#{ward.id} a", "Delete") |> render_click()
       refute has_element?(index_live, "#wards-#{ward.id}")
@@ -81,19 +81,19 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
     setup [:create_ward]
 
     test "displays ward", %{conn: conn, ward: ward} do
-      {:ok, _show_live, html} = live(conn, ~p"/wards/#{ward}")
+      {:ok, _show_live, html} = live(conn, ~p"/admin/wards/#{ward}")
 
       assert html =~ "Show Ward"
       assert html =~ ward.name
     end
 
     test "updates ward within modal", %{conn: conn, ward: ward} do
-      {:ok, show_live, _html} = live(conn, ~p"/wards/#{ward}")
+      {:ok, show_live, _html} = live(conn, ~p"/admin/wards/#{ward}")
 
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Ward"
 
-      assert_patch(show_live, ~p"/wards/#{ward}/show/edit")
+      assert_patch(show_live, ~p"/admin/wards/#{ward}/show/edit")
 
       assert show_live
              |> form("#ward-form", ward: @invalid_attrs)
@@ -103,7 +103,7 @@ defmodule LocalHospitalServiceWeb.WardLiveTest do
              |> form("#ward-form", ward: @update_attrs)
              |> render_submit()
 
-      assert_patch(show_live, ~p"/wards/#{ward}")
+      assert_patch(show_live, ~p"/admin/wards/#{ward}")
 
       html = render(show_live)
       assert html =~ "Ward updated successfully"

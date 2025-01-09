@@ -34,4 +34,22 @@ defmodule LocalHospitalService.HospitalFixtures do
 
     encounter
   end
+
+  @doc """
+  Generate a patient.
+  """
+  def patient_fixture(attrs \\ %{}) do
+    {:ok, patient} =
+      attrs
+      |> Enum.into(%{
+        cf: "some cf",
+        date_of_birth: ~D[2025-01-05],
+        firstname: "some firstname",
+        gender: "some gender",
+        lastname: "some lastname"
+      })
+      |> LocalHospitalService.Hospital.create_patient()
+
+    patient
+  end
 end
