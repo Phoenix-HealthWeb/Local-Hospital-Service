@@ -9,6 +9,8 @@ defmodule LocalHospitalService.Hospital.Patient do
     field :date_of_birth, :date
     field :gender, :string
     has_many :conditions, LocalHospitalService.Conditions.Condition
+    has_many :medication_requests, LocalHospitalService.MedicationRequests.MedicationRequest
+    has_many :observations, LocalHospitalService.Observations.Observation
 
     timestamps(type: :utc_datetime)
   end
@@ -18,6 +20,10 @@ defmodule LocalHospitalService.Hospital.Patient do
     patient
     |> cast(attrs, [:cf, :firstname, :lastname, :date_of_birth, :gender])
     |> cast_assoc(:conditions, with: &LocalHospitalService.Conditions.Condition.changeset/2)
+    |> cast_assoc(:medication_requests,
+      with: &LocalHospitalService.MedicationRequests.MedicationRequest.changeset/2
+    )
+    |> cast_assoc(:observations, with: &LocalHospitalService.Observations.Observation.changeset/2)
     |> validate_required([:cf, :firstname, :lastname, :date_of_birth, :gender])
   end
 
