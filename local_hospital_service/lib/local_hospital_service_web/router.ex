@@ -60,6 +60,7 @@ defmodule LocalHospitalServiceWeb.Router do
         live "/wards", DoctorLive.Index, :index
         live "/wards/:wardId", DoctorLive.Indexxx, :indexxx
         live "/wards/:wardId/visit", DoctorLive.Index2, :index2
+        live "/wards/:wardId/visit/:cf", DoctorLive.Index3, :index3
     end
   end
 

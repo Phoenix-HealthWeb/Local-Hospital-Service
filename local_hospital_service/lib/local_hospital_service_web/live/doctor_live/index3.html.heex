@@ -1,0 +1,26 @@
+<.header>
+  <strong>Patient Details:</strong>
+</.header>
+
+<%= if @patient do %>
+  <div class="patient-details">
+    <div>
+      <strong>CF:</strong> <%= @patient.cf %>
+    </div>
+    <div>
+      <strong>Firstname:</strong> <%= @patient.firstname %>
+    </div>
+    <div>
+      <strong>Lastname:</strong> <%= @patient.lastname %>
+    </div>
+    <div>
+      <strong>Date of Birth:</strong> <%= @patient.date_of_birth %>
+    </div>
+    <div>
+      <strong>Gender:</strong> <%= @patient.gender %>
+    </div>
+  </div>
+
+<% end %>
+
+
