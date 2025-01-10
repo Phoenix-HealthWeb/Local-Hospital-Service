@@ -3,9 +3,10 @@
 </.header>
 
 <%= if @patient do %>
+  <!-- Dettagli del paziente -->
   <div class="patient-details">
     <div>
-      <strong>CF:</strong> <%= @patient.cf %>
+      <strong>CF:</strong> <%= @patient.cf %>                     
     </div>
     <div>
       <strong>Firstname:</strong> <%= @patient.firstname %>
@@ -21,6 +22,73 @@
     </div>
   </div>
 
+
+<br>
+  <div>
+      <strong>Purpose of visit:</strong> <%= @encounter %>
+    </div>
+    <br>
+  <!-- Riquadro separato per le Conditions -->
+  <div class="conditions-box">
+  <.header>
+    <strong>Conditions</strong>
+    </.header>
+    <%= if @conditions do %>
+      <ul>
+        <%= for condition <- @conditions do %>
+          <li><strong>Comment: </strong><%= condition.comment %></li>
+          <li><strong>Date: </strong><%= condition.date_time %></li>
+          
+          <br>
+        <% end %>
+      </ul>
+    <% else %>
+      <span>No conditions available</span>
+    <% end %>
+  </div>
+
+    
+  <!-- Riquadro separato per le Observations -->
+  <div class="observations-box">
+  <.header>
+    <strong>Observations</strong>
+    </.header>
+    <%= if @observations do %>
+      <ul>
+        <%= for observation <- @observations do %>
+          <li><strong>Date: </strong><%= observation.date_time %></li>
+          <li><strong>Ward: </strong><%= observation.ward %></li>
+          <li><strong>Results: </strong><%= observation.result %></li>
+        
+          <br>
+        <% end %>
+      </ul>
+    <% else %>
+      <span>No observations available</span>
+    <% end %>
+  </div>
+
+ 
+  <!-- Riquadro separato per le Observations -->
+  <div class="medications-box">
+  <.header>
+    <strong>MedicationRequests</strong>
+    </.header>
+    <%= if @medication_request do %>
+      <ul>
+        <%= for medication <- @medication_request do %>
+          <li><strong>Date: </strong><%= medication.date_time %></li>
+          <li><strong>Expiration date: </strong><%= medication.expiration_date %></li>
+          <li><strong>Medication: </strong><%= medication.medication %></li>
+          <li><strong>Posology: </strong><%= medication.posology %></li>
+         
+          <br>
+        <% end %>
+      </ul>
+    <% else %>
+      <span>No observations available</span>
+    <% end %>
+  </div>
+<% else %>
+  <p>Patient medical records not found in the national database</p>
 <% end %>
-
-

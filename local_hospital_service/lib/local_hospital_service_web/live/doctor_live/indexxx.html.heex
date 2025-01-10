@@ -10,7 +10,7 @@
 <.table
   id="encounters"
   rows={@streams.encounters}
-  row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
+  row_click={fn {_id, encounter} -> JS.navigate(~p"/doctors/wards/#{encounter.ward.name}/visit") end}
 >
   <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
   <:col :let={{_id, encounter}} label="Ward">

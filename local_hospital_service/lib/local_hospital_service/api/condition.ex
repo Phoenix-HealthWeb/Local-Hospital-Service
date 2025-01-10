@@ -11,4 +11,6 @@ defmodule LocalHospitalService.Api.Condition do
       {:error, reason} -> {:error, reason}
     end
   end
+
+
 end

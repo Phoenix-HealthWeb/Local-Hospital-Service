@@ -26,6 +26,7 @@ defmodule LocalHospitalServiceWeb.DoctorLive.Index3 do
        socket
        |> assign(:ward_name, ward_name_from_queue) # Assegna il nome della ward
        |> stream(:encounters2, priority_queue)}
+
     else
       # Se il nome non è valido, gestisci l'errore
       {:ok, socket |> assign(:error, "Ward not found")}
@@ -39,27 +40,66 @@ defmodule LocalHospitalServiceWeb.DoctorLive.Index3 do
   end
 
   @impl true
-def handle_params(%{"wardId" => ward_name, "cf" => encounter_patient} = _params, _url, socket) do
-  # Ottieni l'ID della ward dal nome
-  ward_id = ward_name_to_id(ward_name)
+  def handle_params(%{"wardId" => ward_name, "cf" => encounter_patient} = _params, _url, socket) do
+    ward_id = ward_name_to_id(ward_name)
 
-  if ward_id do
-    # Filtra gli encounters usando l'ID della ward e il paziente (encounterId)
-    encounters = Hospital.list_encounters()
-    |> Enum.filter(&(&1.ward_id == ward_id))
-    |> Enum.filter(&(&1.status == "in_visit"))
-    |> Enum.filter(&(&1.patient == encounter_patient)) # Filtra per encounterId
+    if ward_id do
+      # Filtra gli encounters usando l'ID della ward e il paziente
+      encounters = Hospital.list_encounters()
+      |> Enum.filter(&(&1.ward_id == ward_id))
+      |> Enum.filter(&(&1.status == "in_visit"))
+      |> Enum.filter(&(&1.patient == encounter_patient))
+
+      # Recupera i dati del paziente
+      patient = LocalHospitalService.Api.Patient.get_by_cf(encounter_patient)
+
+      if patient do
+        # Precarica le condizioni, osservazioni e richieste di farmaci del paziente
+        conditions = Enum.reverse(Enum.map(patient.conditions, & &1))
+        observations = Enum.reverse(Enum.map(patient.observations, & &1))
+        medication_request = Enum.reverse(Enum.map(patient.medication_requests, & &1))
+
+        quack =
+          case List.first(encounters) do
+            nil -> nil # Nessun elemento trovato
+            encounter -> encounter.reason
+          end
 
 
-    patient = LocalHospitalService.Api.Patient.get_by_cf(encounter_patient)
+        {:noreply,
+         socket
+         |> assign(:encounter, quack)
+         |> assign(:patient, patient)
+         |> assign(:conditions, conditions)
+         |> assign(:observations, observations)
+         |> assign(:medication_request, medication_request)}
+      else
+        {:noreply,
+         socket
+         |> assign(:error, "Patient not found")
+         |> assign(:patient, nil)
+         |> assign(:conditions, nil)
+         |> assign(:observations, nil)
+         |> assign(:medication_request, nil)}
+      end
+    end
+  end
 
-    #priority_queue = create_priority_queue(encounters) |> Enum.reverse()
-
-    {:noreply,
-     socket
-     |> assign(:patient, patient)}
+# Funzione per ottenere il paziente tramite ID
+defp get_patient(patient_id) do
+  if patient_id do
+    Repo.get(Patient, patient_id)  # Recupera il paziente tramite ID
   else
-    {:noreply, socket |> assign(:error, "Ward not found")}
+    nil
+  end
+end
+
+# Funzione per ottenere il practitioner tramite ID
+defp get_practitioner(practitioner_id) do
+  if practitioner_id do
+    Repo.get(Practitioner, practitioner_id)  # Recupera il practitioner tramite ID
+  else
+    nil
   end
 end
 

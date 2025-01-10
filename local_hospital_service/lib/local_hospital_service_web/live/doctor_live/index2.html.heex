@@ -10,7 +10,6 @@
 <.table
   id="encounters"
   rows={@streams.encounters}
-  row_click={fn {_id, encounter} -> JS.navigate(~p"/encounters/#{encounter}") end}
 >
   <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
   <:col :let={{_id, encounter}} label="Ward">
@@ -32,31 +31,11 @@
       <% _ -> %>
         <span class="badge badge-secondary">Unknown</span>
     <% end %>
+
+    
   </:col>
   <:action :let={{_id, encounter}}>
-    <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
+    <.link patch={~p"/doctors/wards/#{encounter.ward.name}/visit/#{encounter.patient}"}>Details</.link>
   </:action>
-  <:action :let={{id, encounter}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
+  
 </.table>
-
-<.modal :if={@live_action in [:new, :edit]} id="encounter-modal" show on_cancel={JS.patch(~p"/encounters")}>
-  <.live_component
-    module={LocalHospitalServiceWeb.DoctorLive.FormComponent}
-    id={@encounter.id || :new}
-    title={@page_title}
-    action={@live_action}
-    encounter={@encounter}
-    wards={@wards}
-    patch={~p"/encounters"}
-  />
-  
-  
-</.modal>
-

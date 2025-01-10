@@ -10,14 +10,25 @@ defmodule LocalHospitalService.Api do
   """
   def get(path) do
     url = get_url(path)
+    headers = get_headers()
 
-    case HTTPoison.get(url, get_headers()) do
+    Logger.debug("Generated URL: #{url}")
+    Logger.debug("Request Headers: #{inspect(headers)}")
+
+    case HTTPoison.get(url, headers) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        %{data: data} = Jason.decode!(body, keys: :atoms)
-        {:ok, data}
+        case Jason.decode(body, keys: :atoms) do
+          {:ok, %{data: data}} -> {:ok, data}
+          {:ok, other} ->
+            Logger.error("Unexpected response structure: #{inspect(other)}")
+            {:error, :unexpected_response}
+          {:error, decode_error} ->
+            Logger.error("JSON decoding error: #{inspect(decode_error)}")
+            {:error, :invalid_json}
+        end
 
       {:ok, %HTTPoison.Response{status_code: status_code, body: body}} ->
-        Logger.error("GET #{url} failed with status #{status_code}")
+        Logger.error("GET #{url} failed with status #{status_code}: #{body}")
         {:error, %{status_code: status_code, body: body}}
 
       {:error, %HTTPoison.Error{reason: reason}} ->
@@ -25,6 +36,7 @@ defmodule LocalHospitalService.Api do
         {:error, reason}
     end
   end
+
 
   @doc """
     Performs a POST request to the NDB Rest API.

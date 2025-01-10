@@ -9,16 +9,10 @@
   <% end %>
 </p>
 
-
-
-
-
-
-
 <.table
   id="encounters"
   rows={@streams.encounters}
-  row_click={fn {_id, encounter} -> JS.push("navigate_to_ward", value: %{ward_id: encounter.ward_id}) end}
+  row_click={fn {_id, encounter} -> JS.navigate(~p"/doctors/wards/#{encounter.ward.name}") end}
 >
   <:col :let={{_id, encounter}} label="Priority"><%= encounter.priority %></:col>
   <:col :let={{_id, encounter}} label="Ward">

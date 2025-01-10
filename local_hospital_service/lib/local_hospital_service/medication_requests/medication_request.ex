@@ -1,5 +1,6 @@
 defmodule LocalHospitalService.MedicationRequests.MedicationRequest do
   use Ecto.Schema
+  import Ecto.Query, warn: false
   import Ecto.Changeset
 
   schema "medication_request" do
@@ -64,4 +65,7 @@ defmodule LocalHospitalService.MedicationRequests.MedicationRequest do
       })
     )
   end
+
+
+
 end
