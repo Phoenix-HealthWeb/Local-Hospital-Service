@@ -29,17 +29,27 @@
     </div>
   </div>
 
-
 <br>
 <div>
   <strong>Purpose of visit:</strong> <%= @reason %>
 </div>
 <br>
 
-
+<.header>
+  <:actions>
 <.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/conditions"}>
   <.button>Conditions</.button>
 </.link>
+<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/observations"}>
+  <.button>Observations</.button>
+</.link>
+<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/medical_requests"}>
+  <.button>Medical Requests</.button>
+</.link>
+</:actions>
+</.header>
+
+
 
 <.modal :if={@live_action in [:new, :edit]} id="condition-modal" show on_cancel={JS.patch(~p"/conditions")}>
   <.live_component
@@ -53,9 +63,7 @@
 
 <br>
 <br>
-<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/observations"}>
-  <.button>Observations</.button>
-</.link>
+
  
 <.modal :if={@live_action in [:new, :edit]} id="observation-modal" show on_cancel={JS.patch(~p"/observations")}>
   <.live_component
@@ -69,9 +77,7 @@
 
 <br>
 <br>
-<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/medical_requests"}>
-  <.button>Medical Requests</.button>
-</.link>
+
 
 <.modal :if={@live_action in [:new, :edit]} id="medication_request-modal" show on_cancel={JS.patch(~p"/medication_requests")}>
   <.live_component

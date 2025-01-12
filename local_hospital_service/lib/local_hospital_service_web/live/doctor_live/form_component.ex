@@ -1,9 +1,7 @@
-defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
+defmodule LocalHospitalServiceWeb.DoctorLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
   alias LocalHospitalService.Hospital
-
-  require Logger
 
   @impl true
   def render(assigns) do
@@ -25,24 +23,13 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
         <.input field={@form[:reason]} type="text" label="Reason" />
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
         <.input field={@form[:patient]} type="text" label="Patient" />
+
         <!-- Ward select -->
-        <.input
-          field={@form[:ward_id]}
-          type="select"
-          options={@wards}
-          prompt="Select a Ward"
-          label="Ward"
-          required
-        />
+        <.input field={@form[:ward_id]} type="select" options={@wards} prompt="Select a Ward" label="Ward" />
+
         <!-- Status select -->
-        <.input
-          field={@form[:status]}
-          type="select"
-          options={["queue", "in_visit"]}
-          prompt="Select a status"
-          label="Status"
-          required
-        />
+        <.input field={@form[:status]} type="select" options={["queue", "in_visit"]} prompt="Select Status" label="Status" />
+
         <:actions>
           <.button phx-disable-with="Saving...">Save Encounter</.button>
         </:actions>
@@ -75,7 +62,7 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
 
     changeset =
       socket.assigns.encounter
-      |> Hospital.change_encounter(encounter_params)
+      |> Hospital.change_encounter(sanitized_params)
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, :form, to_form(changeset))}
@@ -88,9 +75,9 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
       |> Enum.reject(fn {key, _value} -> String.starts_with?(key, "_unused_") end)
       |> Enum.into(%{})
 
-    case save_encounter(socket.assigns.action, socket.assigns.encounter, encounter_params) do
+    case save_encounter(socket.assigns.action, socket.assigns.encounter, sanitized_params) do
       {:ok, encounter} ->
-        send(self(), {__MODULE__, {:saved, encounter}})
+        send(self(), {:saved, encounter})
 
         {:noreply,
          socket
