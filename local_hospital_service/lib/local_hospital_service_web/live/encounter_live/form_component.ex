@@ -41,7 +41,6 @@ defmodule LocalHospitalServiceWeb.EncounterLive.FormComponent do
           options={["queue", "in_visit"]}
           prompt="Select a status"
           label="Status"
-          disabled={@id == :new}
           required
         />
         <:actions>
