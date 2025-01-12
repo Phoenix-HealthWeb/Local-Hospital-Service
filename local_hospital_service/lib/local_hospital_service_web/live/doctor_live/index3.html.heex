@@ -1,6 +1,13 @@
 <.header>
   <strong>Patient Details:</strong>
+
+  <:actions>
+    <.link patch={~p"/doctors/wards/#{@ward_name}/visit"}>  <!-- Link per creare una nuova condition -->
+      <.button>Back</.button>
+    </.link>
+  </:actions>
 </.header>
+
 
 <%= if @patient do %>
   <!-- Dettagli del paziente -->

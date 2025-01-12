@@ -5,7 +5,14 @@
   <% else %>
     Unknown
   <% end %>
+
+  <:actions>
+    <.link patch={~p"/doctors/wards/#{@ward_name}"}>  <!-- Link per creare una nuova condition -->
+      <.button>Back</.button>
+    </.link>
+  </:actions>
 </.header>
+
 
 <.table
   id="encounters"

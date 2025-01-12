@@ -36,13 +36,15 @@
     <% end %>
   </:col>
   <:action :let={{_id, encounter}}>
+  <%= unless encounter.status == "in_visit" do %>
     <.link
       phx-click="in_visit"
       phx-value-id={encounter.id}
     >
       Visit
     </.link>
-  </:action>
+  <% end %>
+</:action>
   <:action :let={{id, encounter}}>
     <.link
       phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{id}")} 
