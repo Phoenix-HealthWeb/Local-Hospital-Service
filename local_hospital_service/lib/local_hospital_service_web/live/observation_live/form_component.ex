@@ -1,8 +1,6 @@
 defmodule LocalHospitalServiceWeb.ObservationLive.FormComponent do
   use LocalHospitalServiceWeb, :live_component
 
-  alias LocalHospitalService.Observations
-
   @impl true
   def render(assigns) do
     ~H"""
@@ -17,11 +15,9 @@ defmodule LocalHospitalServiceWeb.ObservationLive.FormComponent do
         id="observation-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save"
-      >
+        phx-submit="save">
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
         <.input field={@form[:ward]} type="text" label="Ward" />
-        <.input field={@form[:hospital_id]} type="text" label="Hospital" />
         <.input field={@form[:result]} type="text" label="Result" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Observation</.button>

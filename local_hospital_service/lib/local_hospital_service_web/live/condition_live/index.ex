@@ -4,9 +4,24 @@ defmodule LocalHospitalServiceWeb.ConditionLive.Index do
   alias LocalHospitalService.Conditions.Condition
 
   @impl true
-  def mount(_params, _session, socket) do
-    # TODO: Retrieve all conditions
-    {:ok, stream(socket, :conditions, [])}
+  def mount(%{"wardId" => ward_name, "cf" => encounter_patient} = _params, _url, socket) do
+    # Usa `case` per verificare i parametri necessari
+
+
+      # Esegui la logica se i parametri sono presenti
+      patient = LocalHospitalService.Api.Patient.get_by_cf(encounter_patient)
+      conditions = Enum.reverse(Enum.map(patient.conditions, & &1))
+
+      # Restituisci il socket con le nuove informazioni
+      {:ok,
+        socket
+        |> assign(:ward_name, ward_name)
+        |> assign(:cf, encounter_patient)
+        |> assign(:conditions, conditions)
+        |> assign(:patient, patient)
+        |> stream(:conditions, conditions)}
+
+
   end
 
   @impl true
@@ -23,6 +38,12 @@ defmodule LocalHospitalServiceWeb.ConditionLive.Index do
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, "Listing Conditions")
+    |> assign(:condition, nil)
+  end
+
+  defp apply_action(socket, :edit, %{"id" => id}) do
+    socket
+    |> assign(:page_title, "Edit Condition")
     |> assign(:condition, nil)
   end
 

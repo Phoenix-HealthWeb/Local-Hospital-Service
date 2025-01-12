@@ -1,13 +1,21 @@
 defmodule LocalHospitalServiceWeb.ObservationLive.Index do
-  use LocalHospitalServiceWeb, :live_view
 
-  alias LocalHospitalService.Observations
+  use LocalHospitalServiceWeb, :live_view
   alias LocalHospitalService.Observations.Observation
 
   @impl true
-  def mount(_params, _session, socket) do
-    # TODO: Retrieve observations
-    {:ok, stream(socket, :observation_collection, [])}
+  def mount(%{"wardId" => ward_name, "cf" => encounter_patient} = _params, _url, socket) do
+    # Inizializza variabili con valori predefiniti
+    # Recupera i dati del paziente
+    patient = LocalHospitalService.Api.Patient.get_by_cf(encounter_patient)
+    observations = Enum.reverse(Enum.map(patient.observations, & &1))
+
+    {:ok,
+     socket
+     |> assign(:ward_name, ward_name)
+     |> assign(:cf, encounter_patient)
+     |> assign(:patient, patient)
+     |> stream(:observations, observations)}
   end
 
   @impl true
@@ -23,12 +31,18 @@ defmodule LocalHospitalServiceWeb.ObservationLive.Index do
 
   defp apply_action(socket, :index, _params) do
     socket
-    |> assign(:page_title, "Listing Observation")
+    |> assign(:page_title, "Listing Observations")
+    |> assign(:observation, nil)
+  end
+
+  defp apply_action(socket, :edit, %{"id" => id}) do
+    socket
+    |> assign(:page_title, "Edit Condition")
     |> assign(:observation, nil)
   end
 
   @impl true
   def handle_info({LocalHospitalServiceWeb.ObservationLive.FormComponent, {:saved, observation}}, socket) do
-    {:noreply, stream_insert(socket, :observation_collection, observation)}
+    {:noreply, stream_insert(socket, :observations, observation)}
   end
 end

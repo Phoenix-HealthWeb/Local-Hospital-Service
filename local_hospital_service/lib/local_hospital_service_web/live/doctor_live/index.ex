@@ -1,49 +1,47 @@
-defmodule LocalHospitalServiceWeb.DoctorLive.Index do
+defmodule LocalHospitalServiceWeb.LocalHospitalServiceWeb.DoctorLive.Index do
   use LocalHospitalServiceWeb, :live_view
-
   alias LocalHospitalService.Hospital
 
   @impl true
-def mount(_params, _session, socket) do
-  # Precaricamento degli encounter con le ward
-  encounters = Hospital.list_encounters()
-  priority_queue = create_priority_queue(encounters)
+  @spec mount(any(), any(), map()) :: {:ok, Phoenix.LiveView.Socket.t()}
+  def mount(_params, _session, socket) do
 
-  priority_queue = Enum.reverse(priority_queue)
+    # Retrieving all encounters of this hospital
+    encounters = Hospital.list_encounters()
 
-  # Conversione delle ward in una lista di opzioni per il form
-  wards = Hospital.list_wards() |> Enum.map(&{&1.name, &1.id})
+    #creation of a priority queue based on priority parameter of encounters and sorting it
+    priority_queue = create_priority_queue(encounters)
+    priority_queue = Enum.reverse(priority_queue)
 
-  final = list_ward_names_from_ids(wards)
+    #conversion from ward ids to ward names
+    wards = Hospital.list_wards() |> Enum.map(&{&1.name, &1.id})
+    final = list_ward_names_from_ids(wards)
 
+    #counting patients for each ward
+    nice = count_ward_occurrences(priority_queue)
 
-  # Conteggio delle occorrenze per ogni ward
+    {:ok,
+    socket
+    |> assign(:wards, wards)
+    |> assign(:ward_ids, final)
+    |> assign(:nice, nice)
+    |> stream(:encounters, priority_queue)}
+  end
 
-  nice = count_ward_occurrences(priority_queue)
-
-
-  {:ok,
-   socket
-   |> assign(:wards, wards)
-   |> assign(:ward_ids, final)
-   |> assign(:nice, nice)
-   |> stream(:encounters, priority_queue)}
-end
-
-
+  #function that lists all wards available in the present encounters
   def list_ward_ids(encounters) do
     encounters
     |> Enum.map(& &1.ward_id)
   end
 
+  #function that count the amount of encounters for each ward available
   def count_ward_occurrences(encounters) do
-    # Ottieni tutti i ward_id presenti negli encounters
+
     ward_ids = Enum.map(encounters, & &1.ward_id)
 
-    # Conta le occorrenze di ciascun ward_id
     occurrences = Enum.frequencies(ward_ids)
 
-    # Associa i conteggi ai nomi delle ward
+    #association between wards and their counters
     Enum.map(occurrences, fn {ward_id, count} ->
       ward_name =
         encounters
@@ -55,49 +53,39 @@ end
     end)
   end
 
-
-
-
-
-
-
   def create_priority_queue(encounters) do
-    # Assicurati che la priorità sia un numero, poi ordina in ordine crescente
     Enum.sort_by(encounters, & &1.priority)
-
   end
 
+  #simple function to create a list of wards available in the encounter list
   @spec list_ward_names_from_ids(any()) :: list()
   def list_ward_names_from_ids(wards) do
-    # Crea una lista dei nomi delle ward che sono presenti in ward_ids
     encounters = Hospital.list_encounters()
     ward_ids = list_ward_ids(encounters)
-
     ward_names =
       wards
-      |> Enum.filter(fn {name, id} -> id in ward_ids end)  # Filtra le ward che sono nei ward_ids
-      |> Enum.map(fn {name, _id} -> name end)  # Estrai solo i nomi delle ward
-
+      |> Enum.filter(fn {name, id} -> id in ward_ids end)
+      |> Enum.map(fn {name, _id} -> name end)
     ward_names
   end
-
-
-
 
   @impl true
   def handle_params(params, _url, socket) do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
-    # Carica l'encounter con la ward precaricata
-    encounter = Hospital.get_encounter!(id)
-    IO.inspect(encounter.ward, label: "Loaded Ward in Edit Action")
+  @impl true
+def handle_event("in_visit", %{"id" => id}, socket) do
+  # Recupera l'encounter dal database
+  encounter = Hospital.get_encounter!(id)
 
-    socket
-    |> assign(:page_title, "Edit Encounter")
-    |> assign(:encounter, encounter)
-  end
+  # Aggiorna lo stato dell'encounter nel database
+  {:ok, updated_encounter} =
+    Hospital.update_encounter(encounter, %{status: "in_visit"})
+
+  # Aggiorna il socket con l'encounter aggiornato
+  {:noreply, stream_insert(socket, :encounters, updated_encounter)}
+end
 
   defp apply_action(socket, :new, _params) do
     socket
@@ -117,30 +105,11 @@ end
   end
 
   @impl true
-def handle_event("delete", %{"id" => id}, socket) do
-  # Trova ed elimina l'encounter
-  encounter = Hospital.get_encounter!(id)
-  {:ok, _} = Hospital.delete_encounter(encounter)
-
-  # Rimuovi l'encounter dalla lista visibile
-  {:noreply, stream_delete(socket, :encounters, encounter)}
-end
-
-@impl true
-def handle_event("add", %{"encounter" => encounter_params}, socket) do
-  # Crea un nuovo encounter
-  case Hospital.create_encounter(encounter_params) do
-    {:ok, new_encounter} ->
-      updated_encounter = new_encounter
-
-      # Aggiungi l'encounter alla lista visibile
-      {:noreply, stream_insert(socket, :encounters, updated_encounter)}
-
-    {:error, changeset} ->
-      # Gestisci gli errori, ad esempio, mostrando un messaggio all'utente
-      {:noreply, socket |> assign(:error, changeset)}
+  def handle_event("delete", %{"id" => id}, socket) do
+    encounter = Hospital.get_encounter!(id)
+    {:ok, _} = Hospital.delete_encounter(encounter)
+    {:noreply, stream_delete(socket, :encounters, encounter)}
   end
-end
 
 
 end

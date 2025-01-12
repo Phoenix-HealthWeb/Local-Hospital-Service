@@ -24,71 +24,58 @@
 
 
 <br>
-  <div>
-      <strong>Purpose of visit:</strong> <%= @encounter %>
-    </div>
-    <br>
-  <!-- Riquadro separato per le Conditions -->
-  <div class="conditions-box">
-  <.header>
-    <strong>Conditions</strong>
-    </.header>
-    <%= if @conditions do %>
-      <ul>
-        <%= for condition <- @conditions do %>
-          <li><strong>Comment: </strong><%= condition.comment %></li>
-          <li><strong>Date: </strong><%= condition.date_time %></li>
-          
-          <br>
-        <% end %>
-      </ul>
-    <% else %>
-      <span>No conditions available</span>
-    <% end %>
-  </div>
+<div>
+  <strong>Purpose of visit:</strong> <%= @reason %>
+</div>
+<br>
 
-    
-  <!-- Riquadro separato per le Observations -->
-  <div class="observations-box">
-  <.header>
-    <strong>Observations</strong>
-    </.header>
-    <%= if @observations do %>
-      <ul>
-        <%= for observation <- @observations do %>
-          <li><strong>Date: </strong><%= observation.date_time %></li>
-          <li><strong>Ward: </strong><%= observation.ward %></li>
-          <li><strong>Results: </strong><%= observation.result %></li>
-        
-          <br>
-        <% end %>
-      </ul>
-    <% else %>
-      <span>No observations available</span>
-    <% end %>
-  </div>
 
+<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/conditions"}>
+  <.button>Conditions</.button>
+</.link>
+
+<.modal :if={@live_action in [:new, :edit]} id="condition-modal" show on_cancel={JS.patch(~p"/conditions")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.ConditionLive.FormComponent}
+    id={@condition.id || :new}
+    title={@page_title}
+    action={@live_action}
+    condition={@condition}
+    patch={~p"/conditions"}/>
+</.modal>
+
+<br>
+<br>
+<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/observations"}>
+  <.button>Observations</.button>
+</.link>
  
-  <!-- Riquadro separato per le Observations -->
-  <div class="medications-box">
-  <.header>
-    <strong>MedicationRequests</strong>
-    </.header>
-    <%= if @medication_request do %>
-      <ul>
-        <%= for medication <- @medication_request do %>
-          <li><strong>Date: </strong><%= medication.date_time %></li>
-          <li><strong>Expiration date: </strong><%= medication.expiration_date %></li>
-          <li><strong>Medication: </strong><%= medication.medication %></li>
-          <li><strong>Posology: </strong><%= medication.posology %></li>
-         
-          <br>
-        <% end %>
-      </ul>
-    <% else %>
-      <span>No observations available</span>
-    <% end %>
-  </div>
+<.modal :if={@live_action in [:new, :edit]} id="observation-modal" show on_cancel={JS.patch(~p"/observations")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.ObservationLive.FormComponent}
+    id={@observation.id || :new}
+    title={@page_title}
+    action={@live_action}
+    observation={@observation}
+    patch={~p"/observations"}/>
+</.modal>
+
+<br>
+<br>
+<.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}/medical_requests"}>
+  <.button>Medical Requests</.button>
+</.link>
+
+<.modal :if={@live_action in [:new, :edit]} id="medication_request-modal" show on_cancel={JS.patch(~p"/medication_requests")}>
+  <.live_component
+    module={LocalHospitalServiceWeb.MedicationRequestLive.FormComponent}
+    id={@medication_request.id || :new}
+    title={@page_title}
+    action={@live_action}
+    medication_request={@medication_request}
+    patch={~p"/medication_requests"}/>
+</.modal>
+  
 <% else %>
   <p>Patient medical records not found in the national database</p>
 <% end %>

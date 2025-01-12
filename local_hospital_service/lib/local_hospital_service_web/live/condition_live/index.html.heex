@@ -1,33 +1,25 @@
 <.header>
   Listing Conditions
   <:actions>
-    <.link patch={~p"/admin/conditions/new"}>
-      <.button>New Condition</.button>
+    <.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}"}>  <!-- Link per creare una nuova condition -->
+      <.button>Back</.button>
     </.link>
   </:actions>
 </.header>
 
 <.table
   id="conditions"
-  rows={@streams.conditions}
-  row_click={fn {_id, condition} -> JS.navigate(~p"/conditions/#{condition}") end}
->
+  rows={@streams.conditions}>
   <:col :let={{_id, condition}} label="Comment"><%= condition.comment %></:col>
   <:col :let={{_id, condition}} label="Date time"><%= condition.date_time %></:col>
   <:action :let={{_id, condition}}>
     <div class="sr-only">
-      <.link navigate={~p"/conditions/#{condition}"}>Show</.link>
+      <.link navigate={~p"/conditions/#{condition.id}"}>Show</.link>
     </div>
-    <.link patch={~p"/conditions/#{condition}/edit"}>Edit</.link>
+      
   </:action>
-  <:action :let={{id, condition}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: condition.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
+
+ 
 </.table>
 
 <.modal :if={@live_action in [:new, :edit]} id="condition-modal" show on_cancel={JS.patch(~p"/conditions")}>
@@ -37,6 +29,5 @@
     title={@page_title}
     action={@live_action}
     condition={@condition}
-    patch={~p"/conditions"}
-  />
+    patch={~p"/conditions"}/>
 </.modal>
