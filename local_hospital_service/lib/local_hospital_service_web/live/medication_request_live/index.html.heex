@@ -1,44 +1,29 @@
 <.header>
   Listing Medication request
   <:actions>
-    <.link patch={~p"/medication_request/new"}>
-      <.button>New Medication request</.button>
+    <.link patch={~p"/doctors/wards/#{@ward_name}/visit/#{@patient.cf}"}>  <!-- Link per creare una nuova condition -->
+      <.button>Back</.button>
     </.link>
   </:actions>
 </.header>
 
 <.table
-  id="medication_request"
-  rows={@streams.medication_request_collection}
-  row_click={fn {_id, medication_request} -> JS.navigate(~p"/medication_request/#{medication_request}") end}
->
+  id="medication_requests"
+  rows={@streams.medication_requests}>
   <:col :let={{_id, medication_request}} label="Date time"><%= medication_request.date_time %></:col>
-  <:col :let={{_id, medication_request}} label="Expiration date"><%= medication_request.expiration_date %></:col>
+  <:col :let={{_id, medication_request}} label="Expiration_Date"><%= medication_request.expiration_date %></:col>
   <:col :let={{_id, medication_request}} label="Medication"><%= medication_request.medication %></:col>
   <:col :let={{_id, medication_request}} label="Posology"><%= medication_request.posology %></:col>
-  <:action :let={{_id, medication_request}}>
-    <div class="sr-only">
-      <.link navigate={~p"/medication_request/#{medication_request}"}>Show</.link>
-    </div>
-    <.link patch={~p"/medication_request/#{medication_request}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, medication_request}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: medication_request.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
 </.table>
 
-<.modal :if={@live_action in [:new, :edit]} id="medication_request-modal" show on_cancel={JS.patch(~p"/medication_request")}>
+<.modal :if={@live_action in [:new, :edit]} id="medication_request-modal" show on_cancel={JS.patch(~p"/medication_requests")}>
   <.live_component
     module={LocalHospitalServiceWeb.MedicationRequestLive.FormComponent}
     id={@medication_request.id || :new}
     title={@page_title}
     action={@live_action}
     medication_request={@medication_request}
-    patch={~p"/medication_request"}
-  />
+    patch={~p"/medication_requests"}/>
 </.modal>
+
+

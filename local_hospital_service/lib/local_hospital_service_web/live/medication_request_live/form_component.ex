@@ -15,8 +15,7 @@ defmodule LocalHospitalServiceWeb.MedicationRequestLive.FormComponent do
         id="medication_request-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save"
-      >
+        phx-submit="save">
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
         <.input field={@form[:expiration_date]} type="date" label="Expiration date" />
         <.input field={@form[:medication]} type="text" label="Medication" />

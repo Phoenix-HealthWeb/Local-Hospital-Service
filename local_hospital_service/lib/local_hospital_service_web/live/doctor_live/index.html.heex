@@ -36,7 +36,12 @@
     <% end %>
   </:col>
   <:action :let={{_id, encounter}}>
-    <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
+    <.link
+      phx-click="in_visit"
+      phx-value-id={encounter.id}
+    >
+      Visit
+    </.link>
   </:action>
   <:action :let={{id, encounter}}>
     <.link
@@ -46,9 +51,6 @@
       Delete
     </.link>
   </:action>
-
-  
-
 </.table>
 
 
@@ -62,7 +64,5 @@
     wards={@wards}
     patch={~p"/encounters"}
   />
-  
-  
 </.modal>
 

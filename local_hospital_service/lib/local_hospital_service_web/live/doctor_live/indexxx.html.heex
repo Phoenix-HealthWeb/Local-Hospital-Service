@@ -34,11 +34,19 @@
     <% end %>
   </:col>
   <:action :let={{_id, encounter}}>
-    <.link patch={~p"/encounters/#{encounter}/edit"}>Edit</.link>
-  </:action>
+  <%= unless encounter.status == "in_visit" do %>
+    <.link
+      phx-click="in_visit"
+      phx-value-id={encounter.id}
+    >
+      Visit
+    </.link>
+  <% end %>
+</:action>
+
   <:action :let={{id, encounter}}>
     <.link
-      phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{id}")}
+      phx-click={JS.push("delete", value: %{id: encounter.id}) |> hide("##{id}")} 
       data-confirm="Are you sure?"
     >
       Delete

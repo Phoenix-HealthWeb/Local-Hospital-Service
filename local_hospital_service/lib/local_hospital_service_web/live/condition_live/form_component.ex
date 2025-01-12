@@ -9,14 +9,12 @@ defmodule LocalHospitalServiceWeb.ConditionLive.FormComponent do
         <%= @title %>
         <:subtitle>Use this form to manage condition records in your database.</:subtitle>
       </.header>
-
       <.simple_form
         for={@form}
         id="condition-form"
         phx-target={@myself}
         phx-change="validate"
-        phx-submit="save"
-      >
+        phx-submit="save">
         <.input field={@form[:comment]} type="text" label="Comment" />
         <.input field={@form[:date_time]} type="datetime-local" label="Date time" />
         <:actions>
@@ -44,26 +42,31 @@ defmodule LocalHospitalServiceWeb.ConditionLive.FormComponent do
         socket.assigns.condition,
         condition_params
       )
-
     {:noreply, assign(socket, form: to_form(changeset, action: :validate))}
   end
 
-  def handle_event("save", %{"condition" => condition_params}, socket) do
-    save_condition(socket, socket.assigns.action, condition_params)
+  defp save_condition(socket, :new, condition_params) do
+    case LocalHospitalService.Api.Condition.create(
+           LocalHospitalService.Conditions.Condition.struct!(nil, condition_params)
+         ) do
+      {:ok, _condition} ->
+        notify_parent({:saved, condition_params})
+
+        {:noreply,
+         socket
+         |> put_flash(:info, "Condition created successfully")
+         |> push_patch(to: "/doctors/wards")}
+
+      {:error, _reason} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to create condition")}
+    end
   end
 
-  defp save_condition(socket, :new, condition_params) do
-    :ok =
-      LocalHospitalService.Conditions.Condition.syncronize_to_ndb(
-        LocalHospitalService.Conditions.Condition.struct!(nil, condition_params)
-      )
-
-    notify_parent({:saved, condition_params})
-
-    {:noreply,
-     socket
-     |> put_flash(:info, "Condition created successfully")
-     |> push_patch(to: socket.assigns.patch)}
+  @impl true
+  def handle_event("save", %{"condition" => condition_params}, socket) do
+    save_condition(socket, socket.assigns.action, condition_params)
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
