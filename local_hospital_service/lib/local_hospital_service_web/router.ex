@@ -31,7 +31,8 @@ defmodule LocalHospitalServiceWeb.Router do
   end
 
   scope "/nurses", LocalHospitalServiceWeb do
-    pipe_through [:browser, :require_authenticated_nurse]
+  #  pipe_through [:browser, :require_authenticated_nurse]
+    pipe_through [:browser]
     get "/", PageController, :nurses
 
     live_session :nurses,
