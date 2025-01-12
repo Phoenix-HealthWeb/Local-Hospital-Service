@@ -52,6 +52,6 @@ defmodule LocalHospitalServiceWeb.CfVerificationLive do
      socket
      |> assign(:show_patient_not_found_dialog, false)
      |> assign(:cf_input, "")
-     |> push_patch(to: ~p"/cf_verification")}
+     |> push_patch(to: ~p"/nurses/cf_verification")}
   end
 end

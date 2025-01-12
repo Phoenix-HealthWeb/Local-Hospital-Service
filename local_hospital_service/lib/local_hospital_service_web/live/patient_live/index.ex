@@ -2,7 +2,6 @@ defmodule LocalHospitalServiceWeb.PatientLive.Index do
   use LocalHospitalServiceWeb, :live_view
 
   alias LocalHospitalService.Hospital
-  alias LocalHospitalService.Hospital.Patient
 
   @impl true
   def mount(_params, _session, socket) do
