@@ -67,10 +67,6 @@ defmodule LocalHospitalServiceWeb.Router do
         live "/wards/:wardId/visit/:cf/conditions", ConditionLive.Index, :index
         live "/wards/:wardId/visit/:cf/observations", ObservationLive.Index, :index
         live "/wards/:wardId/visit/:cf/medical_requests", MedicationRequestLive.Index, :index
-        live "/conditions/new", ConditionLive.Index, :new
-        live "/observations/new", ObservationLive.Index, :new
-        live "/medical_requests/new", MedicationRequestLive.Index, :new
-        live "/conditions", ConditionLive.Index, :index
     end
   end
 
